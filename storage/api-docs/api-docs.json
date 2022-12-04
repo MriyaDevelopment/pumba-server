@@ -1,0 +1,777 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Pumba Api",
+        "version": "1.0.2"
+    },
+    "servers": [
+        {
+            "url": "http://ovz5.j04713753.0n03n.vps.myjino.ru/public/api/",
+            "description": "Pumba"
+        }
+    ],
+    "paths": {
+        "/login": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Login",
+                "description": "Login by emailOrName, password",
+                "operationId": "authLogin",
+                "requestBody": {
+                    "description": "Pass user credentials",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "emailOrName",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "emailOrName": {
+                                        "type": "string",
+                                        "format": "name",
+                                        "example": "example@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "123456"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "401": {
+                        "description": "Wrong credentials response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "User does not exist"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "api_token": {
+                                            "type": "string",
+                                            "example": "OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/register": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Register",
+                "description": "Register by name, email, password",
+                "operationId": "authRegister",
+                "requestBody": {
+                    "description": "Pass user credentials",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "example@example.com"
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "format": "name",
+                                        "example": "example"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "123456"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "404": {
+                        "description": "Name Or Email has already been taken",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "The name has already been taken."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "api_token": {
+                                            "type": "string",
+                                            "example": "Registration completed successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/getChildren": {
+            "post": {
+                "tags": [
+                    "Child"
+                ],
+                "summary": "Children",
+                "description": "Children by api_token",
+                "operationId": "children",
+                "requestBody": {
+                    "description": "Api token",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "api_token"
+                                ],
+                                "properties": {
+                                    "api_token": {
+                                        "type": "string",
+                                        "example": "OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "401": {
+                        "description": "Wrong credentials response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "User does not exist"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "children": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 0
+                                                    },
+                                                    "name": {
+                                                        "type": "string"
+                                                    },
+                                                    "avatar": {
+                                                        "type": "string",
+                                                        "example": null
+                                                    },
+                                                    "birth": {
+                                                        "type": "string",
+                                                        "example": "2022-09-02"
+                                                    },
+                                                    "api_token": {
+                                                        "type": "string"
+                                                    },
+                                                    "gender": {
+                                                        "type": "string",
+                                                        "example": "Enum(Boy, Girl, Neutral)"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/editChild": {
+            "post": {
+                "tags": [
+                    "Child"
+                ],
+                "summary": "editChild",
+                "description": "editChild by api_token, name, avatar, id, gender, birth",
+                "operationId": "editChild",
+                "requestBody": {
+                    "description": "Pass user credentials",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "api_token",
+                                    "name",
+                                    "id",
+                                    "gender",
+                                    "birth"
+                                ],
+                                "properties": {
+                                    "id": {
+                                        "type": "integer",
+                                        "example": 0
+                                    },
+                                    "api_token": {
+                                        "type": "string",
+                                        "example": "OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj"
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Example"
+                                    },
+                                    "gender": {
+                                        "type": "string",
+                                        "example": "Enum(Boy, Girl, Neutral)"
+                                    },
+                                    "birth": {
+                                        "type": "string",
+                                        "example": "2022-09-08"
+                                    },
+                                    "avatar": {
+                                        "type": "string",
+                                        "example": "1669926220.png or Base64 or Null(удали поле опционально null/nil)"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "401": {
+                        "description": "Wrong credentials response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Child does not exist"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "success": {
+                                            "type": "string",
+                                            "example": "Child edited successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/deleteChild": {
+            "post": {
+                "tags": [
+                    "Child"
+                ],
+                "summary": "deleteChild",
+                "description": "deleteChild by api_token, id",
+                "operationId": "deleteChild",
+                "requestBody": {
+                    "description": "Pass user credentials",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "api_token"
+                                ],
+                                "properties": {
+                                    "id": {
+                                        "type": "integer",
+                                        "example": 0
+                                    },
+                                    "api_token": {
+                                        "type": "string",
+                                        "example": "OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "401": {
+                        "description": "Wrong credentials response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Child does not exist"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "success": {
+                                            "type": "string",
+                                            "example": "Child deleted successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/addChild": {
+            "post": {
+                "tags": [
+                    "Child"
+                ],
+                "summary": "addChild",
+                "description": "addChild by api_token, name, avatar, gender, birth",
+                "operationId": "addChild",
+                "requestBody": {
+                    "description": "Pass user credentials",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "api_token",
+                                    "name",
+                                    "gender",
+                                    "birth"
+                                ],
+                                "properties": {
+                                    "api_token": {
+                                        "type": "string",
+                                        "example": "OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj"
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Example"
+                                    },
+                                    "gender": {
+                                        "type": "string",
+                                        "example": "Enum(Boy, Girl, Neutral)"
+                                    },
+                                    "birth": {
+                                        "type": "string",
+                                        "example": "2022-09-08"
+                                    },
+                                    "avatar": {
+                                        "type": "string",
+                                        "example": "Base64 or Null(удали поле опционально null/nil)"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "401": {
+                        "description": "Wrong credentials response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "User does not exist"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "success": {
+                                            "type": "string",
+                                            "example": "Child added successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/getProfile": {
+            "post": {
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Profile",
+                "description": "Profile by api_token",
+                "operationId": "profile",
+                "requestBody": {
+                    "description": "Api token",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "api_token"
+                                ],
+                                "properties": {
+                                    "api_token": {
+                                        "type": "string",
+                                        "example": "OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "401": {
+                        "description": "Wrong credentials response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Profile does not exist"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "profile": {
+                                            "type": "object",
+                                            "example": {
+                                                "name": "ExampleName",
+                                                "email": "example@example.com",
+                                                "fcm_token": null,
+                                                "api_token": "string",
+                                                "avatar": "1669926220.png",
+                                                "role": "Enum(Mother, Father, Other)"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/editProfile": {
+            "post": {
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "editProfile",
+                "description": "editProfile by api_token, name, avatar, role",
+                "operationId": "editProfile",
+                "requestBody": {
+                    "description": "Pass user credentials",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "api_token",
+                                    "name",
+                                    "role"
+                                ],
+                                "properties": {
+                                    "api_token": {
+                                        "type": "string",
+                                        "example": "OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj"
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Example"
+                                    },
+                                    "role": {
+                                        "type": "string",
+                                        "example": "Enum(Mother, Father, Other)"
+                                    },
+                                    "avatar": {
+                                        "type": "string",
+                                        "example": "1669926220.png or Base64 or Null(удали поле опционально null/nil)"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "401": {
+                        "description": "Wrong credentials response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "The name has already been taken."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "success": {
+                                            "type": "string",
+                                            "example": "Profile edited successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/deleteProfile": {
+            "post": {
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "deleteProfile",
+                "description": "deleteProfile by api_token",
+                "operationId": "deleteProfile",
+                "requestBody": {
+                    "description": "Pass user credentials",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "api_token"
+                                ],
+                                "properties": {
+                                    "api_token": {
+                                        "type": "string",
+                                        "example": "OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "401": {
+                        "description": "Wrong credentials response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Profile does not exist"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "success": {
+                                            "type": "string",
+                                            "example": "User account deleted successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

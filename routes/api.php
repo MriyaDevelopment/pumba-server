@@ -3,7 +3,6 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ChildController;
 use App\Http\Controllers\ProfileController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Route;
@@ -19,9 +18,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+//Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//    return $request->user();
+//});
 
 Route::get('storage/', function ($filename)
 {
@@ -55,5 +54,3 @@ Route::post('getChildren', [ChildController::class, 'children']);
 Route::post('editChild', [ChildController::class, 'edit']);
 Route::post('deleteChild', [ChildController::class, 'delete']);
 Route::post('addChild', [ChildController::class, 'add']);
-
-
