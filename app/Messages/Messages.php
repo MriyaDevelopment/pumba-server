@@ -6,7 +6,7 @@ class Messages {
 
     const allFieldsError = "All fields are mandatory";
 
-    //Edit
+    //Profile
     const profileEditedSuccess = "Profile edited successfully";
     const profileDeleteSuccess = "User account deleted successfully";
     const profileError = "Profile does not exist";
@@ -23,6 +23,15 @@ class Messages {
     const childEditedSuccess = "Child edited successfully";
     const childDeleteSuccess = "Child deleted successfully";
     const childAddedSuccess = "Child added successfully";
+
+    //Guide
+    const guidesError = "Guide does not exist";
+
+    //Reminder
+    const reminderAddedSuccess = "Reminder added successfully";
+    const reminderDeleteSuccess = "Reminder delete successfully";
+    const reminderEditError = "Reminder {id} error";
+    const reminderEditSuccess = "Reminder edited successfully";
 }
 
 

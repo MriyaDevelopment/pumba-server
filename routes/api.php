@@ -2,7 +2,9 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ChildController;
+use App\Http\Controllers\GuideController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReminderController;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Route;
@@ -54,3 +56,12 @@ Route::post('getChildren', [ChildController::class, 'children']);
 Route::post('editChild', [ChildController::class, 'edit']);
 Route::post('deleteChild', [ChildController::class, 'delete']);
 Route::post('addChild', [ChildController::class, 'add']);
+
+//Guide
+Route::post('getSubCategoryGuides', [GuideController::class, 'getSubCategoryGuides']);
+
+//Reminder
+Route::post('getReminders', [ReminderController::class, 'reminder']);
+Route::post('addReminder', [ReminderController::class, 'add']);
+Route::post('deleteReminder', [ReminderController::class, 'delete']);
+Route::post('editReminder', [ReminderController::class, 'edit']);

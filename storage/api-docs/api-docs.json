@@ -536,6 +536,93 @@
                 }
             }
         },
+        "/getSubCategoryGuides": {
+            "post": {
+                "tags": [
+                    "Guide"
+                ],
+                "summary": "Guides",
+                "description": "Guides by category",
+                "operationId": "guide",
+                "requestBody": {
+                    "description": "Enum(Health, RelationShip, Sleep, Hygiene, Feeding, Learning) -> String",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "category"
+                                ],
+                                "properties": {
+                                    "category": {
+                                        "type": "string",
+                                        "example": "Sleep"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "401": {
+                        "description": "Wrong credentials response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Guide does not exist"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "guides": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 0
+                                                    },
+                                                    "name": {
+                                                        "type": "string"
+                                                    },
+                                                    "description": {
+                                                        "type": "string",
+                                                        "example": "string"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/getProfile": {
             "post": {
                 "tags": [
@@ -763,6 +850,407 @@
                                         "success": {
                                             "type": "string",
                                             "example": "User account deleted successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/getReminders": {
+            "post": {
+                "tags": [
+                    "Reminder"
+                ],
+                "summary": "Reminder",
+                "description": "Reminders by api_token",
+                "operationId": "reminder",
+                "requestBody": {
+                    "description": "Api Token",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "api_token"
+                                ],
+                                "properties": {
+                                    "api_token": {
+                                        "type": "string",
+                                        "example": "OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "401": {
+                        "description": "Wrong credentials response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "User does not exist"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "reminders": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 0
+                                                    },
+                                                    "name": {
+                                                        "type": "string"
+                                                    },
+                                                    "time": {
+                                                        "type": "string",
+                                                        "example": "HH:mm"
+                                                    },
+                                                    "date": {
+                                                        "type": "string",
+                                                        "example": "Enum(Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday) -> String or format(yyyy-MM-dd) -> String"
+                                                    },
+                                                    "repeat": {
+                                                        "type": "boolean",
+                                                        "example": "false"
+                                                    },
+                                                    "color": {
+                                                        "type": "string",
+                                                        "example": "Enum(Orange, Blue, LightBlue, Green, Purple, Yellow, Pink) -> String"
+                                                    },
+                                                    "type": {
+                                                        "type": "string",
+                                                        "example": "Enum(Custom, Template) ->String"
+                                                    },
+                                                    "state": {
+                                                        "type": "string",
+                                                        "example": "Enum(On, Off) -> String ->String"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/addReminder": {
+            "post": {
+                "tags": [
+                    "Reminder"
+                ],
+                "summary": "addReminder",
+                "description": "addReminder by api_token, name, note, time, date, repeat, color, type",
+                "operationId": "addReminder",
+                "requestBody": {
+                    "description": "Pass user credentials",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "api_token",
+                                    "name",
+                                    "note",
+                                    "time",
+                                    "date",
+                                    "repeat",
+                                    "color",
+                                    "type"
+                                ],
+                                "properties": {
+                                    "api_token": {
+                                        "type": "string",
+                                        "example": "OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj"
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Example"
+                                    },
+                                    "note": {
+                                        "type": "string"
+                                    },
+                                    "time": {
+                                        "type": "string",
+                                        "example": "HH:mm"
+                                    },
+                                    "date": {
+                                        "type": "string",
+                                        "example": "Enum(Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday) -> String or format(yyyy-MM-dd) -> String"
+                                    },
+                                    "repeat": {
+                                        "type": "boolean",
+                                        "example": "true"
+                                    },
+                                    "color": {
+                                        "type": "string",
+                                        "example": "Enum(Orange, Blue, LightBlue, Green, Purple, Yellow, Pink) -> String"
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "example": "Enum(Custom, Template) ->String"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "401": {
+                        "description": "Wrong credentials response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "User does not exist"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "success": {
+                                            "type": "string",
+                                            "example": "Reminder added successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/deleteReminder": {
+            "post": {
+                "tags": [
+                    "Reminder"
+                ],
+                "summary": "deleteReminder",
+                "description": "deleteReminder by api_token, id",
+                "operationId": "deleteReminder",
+                "requestBody": {
+                    "description": "Pass user credentials",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "api_token",
+                                    "id"
+                                ],
+                                "properties": {
+                                    "api_token": {
+                                        "type": "string",
+                                        "example": "OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj"
+                                    },
+                                    "id": {
+                                        "type": "integer",
+                                        "example": 0
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "401": {
+                        "description": "Wrong credentials response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "User does not exist"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "success": {
+                                            "type": "string",
+                                            "example": "Reminder delete successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/editReminder": {
+            "post": {
+                "tags": [
+                    "Reminder"
+                ],
+                "summary": "editReminder",
+                "description": "editReminder by id, api_token, name, note, time, date, repeat, color, type",
+                "operationId": "editReminder",
+                "requestBody": {
+                    "description": "Pass user credentials",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "id",
+                                    "api_token",
+                                    "name",
+                                    "note",
+                                    "time",
+                                    "date",
+                                    "repeat",
+                                    "color",
+                                    "type"
+                                ],
+                                "properties": {
+                                    "id": {
+                                        "type": "integer",
+                                        "example": 0
+                                    },
+                                    "api_token": {
+                                        "type": "string",
+                                        "example": "OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj"
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Example"
+                                    },
+                                    "note": {
+                                        "type": "string"
+                                    },
+                                    "time": {
+                                        "type": "string",
+                                        "example": "HH:mm"
+                                    },
+                                    "date": {
+                                        "type": "string",
+                                        "example": "Enum(Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday) -> String or format(yyyy-MM-dd) -> String"
+                                    },
+                                    "repeat": {
+                                        "type": "boolean",
+                                        "example": "true"
+                                    },
+                                    "color": {
+                                        "type": "string",
+                                        "example": "Enum(Orange, Blue, LightBlue, Green, Purple, Yellow, Pink) -> String"
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "example": "Enum(Custom, Template) ->String"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "401": {
+                        "description": "Wrong credentials response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "User does not exist"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "success": {
+                                            "type": "string",
+                                            "example": "Reminder edited successfully"
                                         }
                                     },
                                     "type": "object"
