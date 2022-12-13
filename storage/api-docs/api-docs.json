@@ -239,7 +239,7 @@
                                             "items": {
                                                 "properties": {
                                                     "id": {
-                                                        "type": "integer",
+                                                        "type": "string",
                                                         "example": 0
                                                     },
                                                     "name": {
@@ -296,7 +296,7 @@
                                 ],
                                 "properties": {
                                     "id": {
-                                        "type": "integer",
+                                        "type": "string",
                                         "example": 0
                                     },
                                     "api_token": {
@@ -388,7 +388,7 @@
                                 ],
                                 "properties": {
                                     "id": {
-                                        "type": "integer",
+                                        "type": "string",
                                         "example": 0
                                     },
                                     "api_token": {
@@ -536,6 +536,103 @@
                 }
             }
         },
+        "/getGames": {
+            "post": {
+                "tags": [
+                    "Games"
+                ],
+                "summary": "Games",
+                "description": "Games by api_token",
+                "operationId": "games",
+                "requestBody": {
+                    "description": "Api token",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "api_token"
+                                ],
+                                "properties": {
+                                    "api_token": {
+                                        "type": "string",
+                                        "example": "OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "401": {
+                        "description": "Wrong credentials response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "User does not exist"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "games": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "string"
+                                                    },
+                                                    "title": {
+                                                        "type": "string"
+                                                    },
+                                                    "subtitle": {
+                                                        "type": "string"
+                                                    },
+                                                    "type": {
+                                                        "type": "string"
+                                                    },
+                                                    "time": {
+                                                        "type": "string"
+                                                    },
+                                                    "image": {
+                                                        "type": "string"
+                                                    },
+                                                    "description": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/getSubCategoryGuides": {
             "post": {
                 "tags": [
@@ -600,8 +697,8 @@
                                             "items": {
                                                 "properties": {
                                                     "id": {
-                                                        "type": "integer",
-                                                        "example": 0
+                                                        "type": "string",
+                                                        "example": "0"
                                                     },
                                                     "name": {
                                                         "type": "string"
@@ -613,6 +710,362 @@
                                                 },
                                                 "type": "object"
                                             }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/addMemory": {
+            "post": {
+                "tags": [
+                    "Memories"
+                ],
+                "summary": "addMemory",
+                "description": "addMemory by api_token, childId, image, note, name, color",
+                "operationId": "addMemory",
+                "requestBody": {
+                    "description": "Pass user credentials",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "api_token",
+                                    "name",
+                                    "note",
+                                    "image",
+                                    "childId",
+                                    "color"
+                                ],
+                                "properties": {
+                                    "api_token": {
+                                        "type": "string",
+                                        "example": "OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj"
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Example"
+                                    },
+                                    "note": {
+                                        "type": "string"
+                                    },
+                                    "color": {
+                                        "type": "string"
+                                    },
+                                    "image": {
+                                        "type": "string",
+                                        "example": "Base64 or Null(удали поле опционально null/nil)"
+                                    },
+                                    "childId": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "401": {
+                        "description": "Wrong credentials response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "User does not exist"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "success": {
+                                            "type": "string",
+                                            "example": "Memory added successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/getMemories": {
+            "post": {
+                "tags": [
+                    "Memories"
+                ],
+                "summary": "Memories",
+                "description": "Memories by api_token, childId",
+                "operationId": "memories",
+                "requestBody": {
+                    "description": "Api token",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "api_token, childId"
+                                ],
+                                "properties": {
+                                    "api_token": {
+                                        "type": "string",
+                                        "example": "OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj"
+                                    },
+                                    "childId": {
+                                        "type": "string",
+                                        "example": "0"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "401": {
+                        "description": "Wrong credentials response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "User does not exist"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "memories": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "string"
+                                                    },
+                                                    "date": {
+                                                        "type": "string"
+                                                    },
+                                                    "name": {
+                                                        "type": "string"
+                                                    },
+                                                    "note": {
+                                                        "type": "string"
+                                                    },
+                                                    "color": {
+                                                        "type": "string"
+                                                    },
+                                                    "image": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/deleteMemory": {
+            "post": {
+                "tags": [
+                    "Memories"
+                ],
+                "summary": "deleteMemory",
+                "description": "deleteMemory by api_token, id",
+                "operationId": "deleteMemory",
+                "requestBody": {
+                    "description": "Pass user credentials",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "api_token"
+                                ],
+                                "properties": {
+                                    "id": {
+                                        "type": "string"
+                                    },
+                                    "api_token": {
+                                        "type": "string",
+                                        "example": "OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "401": {
+                        "description": "Wrong credentials response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "Memory does not exist"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "success": {
+                                            "type": "string",
+                                            "example": "Memory deleted successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/editMemory": {
+            "post": {
+                "tags": [
+                    "Memories"
+                ],
+                "summary": "editMemory",
+                "description": "editMemory by id, image, note, name, color",
+                "operationId": "editMemory",
+                "requestBody": {
+                    "description": "Pass user credentials",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "id",
+                                    "name",
+                                    "note",
+                                    "image",
+                                    "color"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Example"
+                                    },
+                                    "note": {
+                                        "type": "string"
+                                    },
+                                    "color": {
+                                        "type": "string"
+                                    },
+                                    "image": {
+                                        "type": "string",
+                                        "example": "Base64 or Null(удали поле опционально null/nil)"
+                                    },
+                                    "id": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "401": {
+                        "description": "Wrong credentials response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "User does not exist"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "success": {
+                                            "type": "string",
+                                            "example": "Memory eddited successfully"
                                         }
                                     },
                                     "type": "object"
@@ -924,7 +1377,7 @@
                                             "items": {
                                                 "properties": {
                                                     "id": {
-                                                        "type": "integer",
+                                                        "type": "string",
                                                         "example": 0
                                                     },
                                                     "name": {
@@ -1097,7 +1550,7 @@
                                         "example": "OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj"
                                     },
                                     "id": {
-                                        "type": "integer",
+                                        "type": "string",
                                         "example": 0
                                     }
                                 },
@@ -1177,7 +1630,7 @@
                                 ],
                                 "properties": {
                                     "id": {
-                                        "type": "integer",
+                                        "type": "string",
                                         "example": 0
                                     },
                                     "api_token": {

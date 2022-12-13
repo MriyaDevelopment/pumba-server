@@ -42,7 +42,7 @@ class ReminderController extends \App\Http\Controllers\API\Controller
      *       @OA\Property(property="result", type="string", example="success"),
      *       @OA\Property(property="reminders", type="array",
      *       @OA\Items(type="object",
-     *       @OA\Property(property="id", type="integer", example=0),
+     *       @OA\Property(property="id", type="string", example=0),
      *       @OA\Property(property="name", type="string"),
      *       @OA\Property(property="time", type="string", example="HH:mm"),
      *       @OA\Property(property="date", type="string", example="Enum(Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday) -> String or format(yyyy-MM-dd) -> String"),
@@ -58,7 +58,7 @@ class ReminderController extends \App\Http\Controllers\API\Controller
      * @param Request $request
      * @return JsonResponse
      */
-    private function reminder(Request $request): JsonResponse {
+    private function get(Request $request): JsonResponse {
 
         $validator = Validator::make($request->all(), [
             'api_token' => 'required|string'
@@ -185,7 +185,7 @@ class ReminderController extends \App\Http\Controllers\API\Controller
      *    @OA\JsonContent(
      *       required={"api_token", "id"},
      *       @OA\Property(property="api_token", type="string", example="OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj"),
-     *       @OA\Property(property="id", type="integer", example=0)
+     *       @OA\Property(property="id", type="string", example=0)
      *    ),
      * ),
      * @OA\Response(
@@ -212,7 +212,7 @@ class ReminderController extends \App\Http\Controllers\API\Controller
 
         $validator = Validator::make($request->all(), [
             'api_token' => 'required|string',
-            'id' => 'required|integer'
+            'id' => 'required|string'
         ]);
 
         if ($validator->fails()) {
@@ -247,7 +247,7 @@ class ReminderController extends \App\Http\Controllers\API\Controller
      *    description="Pass user credentials",
      *    @OA\JsonContent(
      *       required={"id", "api_token", "name", "note", "time", "date", "repeat", "color", "type"},
-     *       @OA\Property(property="id", type="integer", example=0),
+     *       @OA\Property(property="id", type="string", example=0),
      *       @OA\Property(property="api_token", type="string", example="OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj"),
      *       @OA\Property(property="name", type="string", example="Example"),
      *       @OA\Property(property="note", type="string"),
@@ -281,7 +281,7 @@ class ReminderController extends \App\Http\Controllers\API\Controller
     public function edit(Request $request): JsonResponse {
 
         $validator = Validator::make($request->all(), [
-            'id' => 'required|integer',
+            'id' => 'required|string',
             'api_token' => 'required|string',
             'name' => 'required|string',
             'note' => 'required|string',

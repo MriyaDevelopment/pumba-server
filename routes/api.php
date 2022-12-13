@@ -2,7 +2,9 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ChildController;
+use App\Http\Controllers\GameController;
 use App\Http\Controllers\GuideController;
+use App\Http\Controllers\MemoryController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReminderController;
 use Illuminate\Support\Facades\File;
@@ -47,21 +49,30 @@ Route::post('login', [AuthController::class, 'login']);
 Route::post('register', [AuthController::class, 'register']);
 
 //Profile
-Route::post('getProfile', [ProfileController::class, 'profile']);
+Route::post('getProfile', [ProfileController::class, 'get']);
 Route::post('deleteProfile', [ProfileController::class, 'delete']);
 Route::post('editProfile', [ProfileController::class, 'edit']);
 
 //Child
-Route::post('getChildren', [ChildController::class, 'children']);
+Route::post('getChildren', [ChildController::class, 'get']);
 Route::post('editChild', [ChildController::class, 'edit']);
 Route::post('deleteChild', [ChildController::class, 'delete']);
 Route::post('addChild', [ChildController::class, 'add']);
 
 //Guide
-Route::post('getSubCategoryGuides', [GuideController::class, 'getSubCategoryGuides']);
+Route::post('getSubCategoryGuides', [GuideController::class, 'get']);
 
 //Reminder
-Route::post('getReminders', [ReminderController::class, 'reminder']);
+Route::post('getReminders', [ReminderController::class, 'get']);
 Route::post('addReminder', [ReminderController::class, 'add']);
 Route::post('deleteReminder', [ReminderController::class, 'delete']);
 Route::post('editReminder', [ReminderController::class, 'edit']);
+
+//Memories
+Route::post('getMemories', [MemoryController::class, 'get']);
+Route::post('addMemory', [MemoryController::class, 'add']);
+Route::post('editMemory', [MemoryController::class, 'edit']);
+Route::post('deleteMemory', [MemoryController::class, 'delete']);
+
+//Games
+Route::post('getGames', [GameController::class, 'get']);

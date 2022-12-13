@@ -42,7 +42,7 @@ class ChildController extends Controller
      *       @OA\Property(property="result", type="string", example="success"),
      *       @OA\Property(property="children", type="array",
      *       @OA\Items(type="object",
-     *       @OA\Property(property="id", type="integer", example=0),
+     *       @OA\Property(property="id", type="string", example=0),
      *       @OA\Property(property="name", type="string"),
      *       @OA\Property(property="avatar", type="string", example=null),
      *       @OA\Property(property="birth", type="string", example="2022-09-02"),
@@ -56,7 +56,7 @@ class ChildController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function children(Request $request): JsonResponse
+    public function get(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
             'api_token' => 'required|string'
@@ -91,7 +91,7 @@ class ChildController extends Controller
      *    description="Pass user credentials",
      *    @OA\JsonContent(
      *       required={"api_token", "name", "id", "gender", "birth"},
-     *       @OA\Property(property="id", type="integer", example=0),
+     *       @OA\Property(property="id", type="string", example=0),
      *       @OA\Property(property="api_token", type="string", example="OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj"),
      *       @OA\Property(property="name", type="string", example="Example"),
      *       @OA\Property(property="gender", type="string", example="Enum(Boy, Girl, Neutral)"),
@@ -121,7 +121,6 @@ class ChildController extends Controller
      */
     public function edit(Request $request): JsonResponse
     {
-
         $validator = Validator::make($request->all(), [
             'api_token' => 'required|string',
             'id' => 'required|integer'
@@ -192,7 +191,7 @@ class ChildController extends Controller
      *    description="Pass user credentials",
      *    @OA\JsonContent(
      *       required={"api_token"},
-     *       @OA\Property(property="id", type="integer", example=0),
+     *       @OA\Property(property="id", type="string", example=0),
      *       @OA\Property(property="api_token", type="string", example="OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj")
      *    ),
      * ),
@@ -221,7 +220,7 @@ class ChildController extends Controller
 
         $validator = Validator::make($request->all(), [
             'api_token' => 'required|string',
-            'id' => 'required|integer'
+            'id' => 'required|string'
         ]);
 
         if ($validator->fails()) {

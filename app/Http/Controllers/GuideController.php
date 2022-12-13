@@ -3,7 +3,6 @@
 
 namespace App\Http\Controllers;
 
-
 use App\Messages\Messages;
 use App\Models\Guide;
 use Illuminate\Http\JsonResponse;
@@ -41,7 +40,7 @@ class GuideController extends \App\Http\Controllers\API\Controller
      *       @OA\Property(property="result", type="string", example="success"),
      *       @OA\Property(property="guides", type="array",
      *       @OA\Items(type="object",
-     *       @OA\Property(property="id", type="integer", example=0),
+     *       @OA\Property(property="id", type="string", example="0"),
      *       @OA\Property(property="name", type="string"),
      *       @OA\Property(property="description", type="string", example="string")
      *       )
@@ -52,7 +51,7 @@ class GuideController extends \App\Http\Controllers\API\Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function getSubCategoryGuides(Request $request): JsonResponse {
+    public function get(Request $request): JsonResponse {
 
         $category = $request['category'];
 

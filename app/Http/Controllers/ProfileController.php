@@ -46,7 +46,7 @@ class ProfileController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function profile(Request $request): JsonResponse {
+    public function get(Request $request): JsonResponse {
 
         $profile = $this->getUserByToken($request['api_token']);
 

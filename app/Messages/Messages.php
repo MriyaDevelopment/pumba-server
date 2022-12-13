@@ -32,6 +32,11 @@ class Messages {
     const reminderDeleteSuccess = "Reminder delete successfully";
     const reminderEditError = "Reminder {id} error";
     const reminderEditSuccess = "Reminder edited successfully";
+
+    //Memories
+    const memoryAddedSuccess = "Memory added successfully";
+    const memoryDeleteSuccess = "Memory delete successfully";
+    const memoryEditedSuccess = "Memory edited successfully";
 }
 
 
