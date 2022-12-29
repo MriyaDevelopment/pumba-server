@@ -101,20 +101,6 @@ class ProfileController extends Controller
 
         $api_token = $input['api_token'];
 
-        $rules = array(
-            'name' => 'required|string|unique:users'
-        );
-
-        $messages = array(
-            'name.required|string|unique:users' => Messages::userRegisterNameValidator,
-        );
-
-        $validator = Validator::make($input, $rules, $messages);
-
-        if ($validator->fails()) {
-            return $this->sendError($validator->errors()->first());
-        }
-
         $profile = $this->getUserByToken($api_token);
 
         if (!$profile) {
@@ -130,6 +116,20 @@ class ProfileController extends Controller
         $requestRole = $request['role'];
 
         if ($profileName != $requestName) {
+            $rules = array(
+                'name' => 'required|string|unique:users'
+            );
+
+            $messages = array(
+                'name.required|string|unique:users' => Messages::userRegisterNameValidator,
+            );
+
+            $validator = Validator::make($input, $rules, $messages);
+
+            if ($validator->fails()) {
+                return $this->sendError($validator->errors()->first());
+            }
+
             $profile->name = $requestName;
             $profile->save();
         }
