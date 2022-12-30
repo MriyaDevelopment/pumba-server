@@ -52,6 +52,4 @@ class Controller extends BaseController
         ];
         return response()->json($response, $code);
     }
-
-
 }

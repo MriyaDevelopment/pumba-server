@@ -8,9 +8,8 @@ use App\Models\Child;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
-use App\Http\Controllers\API\Controller;
 
-class ChildController extends Controller
+class ChildController extends \App\Http\Controllers\API\Controller
 {
     /**
      * @OA\Post(
@@ -215,7 +214,7 @@ class ChildController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    private function delete(Request $request): JsonResponse
+    public function delete(Request $request): JsonResponse
     {
 
         $validator = Validator::make($request->all(), [
@@ -287,7 +286,7 @@ class ChildController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    private function add(Request $request): JsonResponse
+    public function add(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
             'api_token' => 'required|string',
