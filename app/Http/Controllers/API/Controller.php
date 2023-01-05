@@ -17,6 +17,14 @@ use Illuminate\Support\Facades\Storage;
  *     description="Pumba",
  *     url="http://ovz5.j04713753.0n03n.vps.myjino.ru/public/api/"
  * )
+ * @OA\SecurityScheme(
+ *    securityScheme="api_token",
+ *    in="header",
+ *    name="api_token",
+ *    type="http",
+ *    scheme="bearer",
+ *    bearerFormat="JWT",
+ * ),
  */
 class Controller extends \App\Http\Controllers\Controller
 {

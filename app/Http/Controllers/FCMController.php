@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Messages\Messages;
 use App\Models\User;
-use App\Notifications\TestNotification;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -68,8 +68,10 @@ class FCMController extends \App\Http\Controllers\API\Controller
      *    required=true,
      *    description="fcm",
      *    @OA\JsonContent(
-     *       required={"api_token"},
+     *       required={"api_token", "body", "title"},
      *       @OA\Property(property="api_token", type="string", example="OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj"),
+     *       @OA\Property(property="body", type="string", example="Test"),
+     *       @OA\Property(property="title", type="string", example="Test"),
      *    ),
      * ),
      * @OA\Response(
@@ -97,12 +99,31 @@ class FCMController extends \App\Http\Controllers\API\Controller
         if (!$user) {
             return $this->sendError(Messages::userError);
         }
-        $body = [
-            'title' => 'Test',
-            'body' => 'Test',
-            'sound' => 'default'
+        self::send(
+            $user['fcm_token'],
+            [
+                'title' => $request['title'],
+                'body' => $request['body'],
+                'sound' => 'default'
+            ]
+        );
+        $result = [
+          'api_token' => $user['api_token'],
+          'fcm_token' => $user['fcm_token'],
+          'title' => $request['title'],
+          'body' => $request['body']
         ];
-        $user->notify(new TestNotification('Test', $body, $user['fcm_token']));
-        return $this->sendSuccess("Testing Notification Successfully");
+        return $this->sendResponse($result, 'result');
+    }
+
+    public function send($token, $notification)
+    {
+        Http::acceptJson()->withToken(config('fcm.token'))->post(
+            'https://fcm.googleapis.com/fcm/send',
+            [
+                'to' => $token,
+                'notification' => $notification,
+            ]
+        );
     }
 }

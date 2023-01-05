@@ -333,6 +333,83 @@
                 }
             }
         },
+        "/sendMessage": {
+            "post": {
+                "tags": [
+                    "BOT"
+                ],
+                "summary": "sendMessage",
+                "description": "sendMessage by api_token, text",
+                "operationId": "sendMessage",
+                "requestBody": {
+                    "description": "bot",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "api_token",
+                                    "text"
+                                ],
+                                "properties": {
+                                    "api_token": {
+                                        "type": "string",
+                                        "example": "OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj"
+                                    },
+                                    "text": {
+                                        "type": "string",
+                                        "example": "Error"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "401": {
+                        "description": "Wrong response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "User does not exist"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "success": {
+                                            "type": "string",
+                                            "example": "Bot sent a message"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/getChildren": {
             "post": {
                 "tags": [
@@ -786,12 +863,22 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "api_token"
+                                    "api_token",
+                                    "body",
+                                    "title"
                                 ],
                                 "properties": {
                                     "api_token": {
                                         "type": "string",
                                         "example": "OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj"
+                                    },
+                                    "body": {
+                                        "type": "string",
+                                        "example": "Test"
+                                    },
+                                    "title": {
+                                        "type": "string",
+                                        "example": "Test"
                                     }
                                 },
                                 "type": "object"
@@ -2163,6 +2250,17 @@
                         }
                     }
                 }
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "api_token": {
+                "type": "http",
+                "name": "api_token",
+                "in": "header",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
             }
         }
     }
