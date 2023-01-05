@@ -65,6 +65,6 @@ class AlertController extends  \App\Http\Controllers\API\Controller
             'text' => $description
         ]);
 
-        return $this->sendSuccess("Bot sent a message");
+        return $this->sendSuccess(Messages::alertSendSuccess);
     }
 }

@@ -47,6 +47,9 @@ class Messages {
 
     //FCM
     const fcmUpdatedSuccess = "fcm_token updated success";
+
+    //Alert
+    const alertSendSuccess = "Bot sent a message";
 }
 
 
