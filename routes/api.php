@@ -2,8 +2,10 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ChildController;
+use App\Http\Controllers\FCMController;
 use App\Http\Controllers\GameController;
 use App\Http\Controllers\GuideController;
+use App\Http\Controllers\MailerController;
 use App\Http\Controllers\MemoryController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReminderController;
@@ -47,6 +49,8 @@ Route::get('storage/', function ($filename)
 //Auth
 Route::post('login', [AuthController::class, 'login']);
 Route::post('register', [AuthController::class, 'register']);
+Route::post('changePassword', [AuthController::class, 'changePassword']);
+Route::post('changeEmail', [AuthController::class, 'changeEmail']);
 
 //Profile
 Route::post('getProfile', [ProfileController::class, 'get']);
@@ -76,3 +80,11 @@ Route::post('deleteMemory', [MemoryController::class, 'delete']);
 
 //Games
 Route::post('getGames', [GameController::class, 'get']);
+
+//Mailer
+Route::post('sendLetter', [MailerController::class, 'sendLetter']);
+Route::post('checkCode', [MailerController::class, 'checkCode']);
+
+//FCM
+Route::post('updateFCMToken', [FCMController::class, 'updateFcmToken']);
+Route::post('sendTestFCMMessage', [FCMController::class, 'sendTestFCMMessage']);

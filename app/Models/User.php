@@ -22,4 +22,9 @@ class User extends Authenticatable
         'created_at',
         'id'
     ];
+
+    public function routeNotificationForFcm()
+    {
+        return $this->fcm_token;
+    }
 }

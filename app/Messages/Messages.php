@@ -17,6 +17,8 @@ class Messages {
     const userRegisterEmailValidator = "Mail already exist";
     const userRegisterNameValidator = "Name already exists";
     const userRegisterSuccess = "Registration completed successfully";
+    const userChangePasswordSuccess = "Password changed successfully";
+    const userChangeMailSuccess = "Email changed successfully";
 
     //Child
     const childError = "Child does not exist";
@@ -37,6 +39,14 @@ class Messages {
     const memoryAddedSuccess = "Memory added successfully";
     const memoryDeleteSuccess = "Memory delete successfully";
     const memoryEditedSuccess = "Memory edited successfully";
+
+    //Mailer
+    const mailSearchError = "Mail does not exist";
+    const codeError = "No such code exists";
+    const codeSuccess = "Code is correct";
+
+    //FCM
+    const fcmUpdatedSuccess = "fcm_token updated success";
 }
 
 

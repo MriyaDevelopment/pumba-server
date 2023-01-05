@@ -154,4 +154,121 @@ class AuthController extends Controller
 
         return $this->sendSuccess(Messages::userRegisterSuccess);
     }
+
+    /**
+     * @OA\Post(
+     * path="/changePassword",
+     * summary="ChangePassword",
+     * description="ChangePassword by email, password",
+     * operationId="changePassword",
+     * tags={"Auth"},
+     * @OA\RequestBody(
+     *    required=true,
+     *    description="Pass user credentials",
+     *    @OA\JsonContent(
+     *       required={"email", "password"},
+     *       @OA\Property(property="email", type="string", format="email", example="example@example.com"),
+     *       @OA\Property(property="password", type="string", format="password", example="123456"),
+     *    ),
+     * ),
+     * @OA\Response(
+     *    response=404,
+     *    description="Mail does not exist",
+     *    @OA\JsonContent(
+     *       @OA\Property(property="result", type="string", example="error"),
+     *       @OA\Property(property="error", type="string", example="Mail does not exist")
+     *    )
+     * ),
+     * @OA\Response(
+     *    response=200,
+     *    description="Success",
+     *    @OA\JsonContent(
+     *       @OA\Property(property="result", type="string", example="success"),
+     *       @OA\Property(property="api_token", type="string", example="Password changed successfully")
+     *        )
+     *     )
+     * )
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function changePassword(Request $request): JsonResponse {
+        $input = $request->all();
+        $validator = Validator::make($input, [
+            'email' => 'required|string|email',
+            'password' => 'required|string|min:6',
+        ]);
+        if ($validator->fails()) {
+            return $this->sendError(Messages::allFieldsError);
+        } else {
+            $user = User::where('email', $input['email'])->first();
+            if (!$user) {
+                return $this->sendError(Messages::mailSearchError);
+            }
+            $user->password = Hash::make($input['password']);
+            $user->save();
+            return $this->sendSuccess(Messages::userChangePasswordSuccess);
+        }
+    }
+
+    /**
+     * @OA\Post(
+     * path="/changeEmail",
+     * summary="ChangeEmail",
+     * description="ChangeEmail by new_email, old_email",
+     * operationId="ChangeEmail",
+     * tags={"Auth"},
+     * @OA\RequestBody(
+     *    required=true,
+     *    description="Pass user credentials",
+     *    @OA\JsonContent(
+     *       required={"new_email", "old_email"},
+     *       @OA\Property(property="new_email", type="string", format="email", example="example@example.com"),
+     *       @OA\Property(property="old_email", type="string", format="email", example="example123@example.com"),
+     *    ),
+     * ),
+     * @OA\Response(
+     *    response=404,
+     *    description="Mail does not exist",
+     *    @OA\JsonContent(
+     *       @OA\Property(property="result", type="string", example="error"),
+     *       @OA\Property(property="error", type="string", example="Mail does not exist")
+     *    )
+     * ),
+     * @OA\Response(
+     *    response=200,
+     *    description="Success",
+     *    @OA\JsonContent(
+     *       @OA\Property(property="result", type="string", example="success"),
+     *       @OA\Property(property="api_token", type="string", example="Mail changed successfully")
+     *        )
+     *     )
+     * )
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function changeEmail(Request $request): JsonResponse {
+        $input = $request->all();
+
+        $rules = array(
+            'new_email' => 'required|string|email|max:255|unique:users',
+            'old_email' => 'required|string'
+        );
+        $messages = array(
+            'new_email.required|string|email|max:255|unique:users' => Messages::userRegisterEmailValidator
+        );
+
+        $validator = Validator::make($input, $rules, $messages);
+
+        if ($validator->fails()) {
+            return $this->sendError($validator->errors()->first());
+        } else {
+            $user = User::where('old_email', $input['old_email'])->first();
+            if (!$user) {
+                return $this->sendError(Messages::mailSearchError);
+            }
+            $user->email = $input['new_email'];
+            $user->save();
+            return $this->sendSuccess(Messages::userChangeMailSuccess);
+        }
+    }
 }

@@ -58,7 +58,7 @@ class ReminderController extends \App\Http\Controllers\API\Controller
      * @param Request $request
      * @return JsonResponse
      */
-    private function get(Request $request): JsonResponse {
+    public function get(Request $request): JsonResponse {
 
         $validator = Validator::make($request->all(), [
             'api_token' => 'required|string'
