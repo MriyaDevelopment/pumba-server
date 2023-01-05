@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\BotController;
+use App\Http\Controllers\AlertController;
 use App\Http\Controllers\ChildController;
 use App\Http\Controllers\FCMController;
 use App\Http\Controllers\GameController;
@@ -91,4 +91,4 @@ Route::post('updateFcmToken', [FCMController::class, 'updateFcmToken']);
 Route::post('sendTestFCMMessage', [FCMController::class, 'sendTestFCMMessage']);
 
 //TELEGRAM BOT
-Route::post('sendMessage', [BotController::class, 'sendMessage']);
+Route::post('sendMessage', [AlertController::class, 'sendMessage']);

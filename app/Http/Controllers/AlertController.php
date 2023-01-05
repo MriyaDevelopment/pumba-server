@@ -7,7 +7,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
-class BotController extends  \App\Http\Controllers\API\Controller
+class AlertController extends  \App\Http\Controllers\API\Controller
 {
     /**
      * @OA\Post(
@@ -15,10 +15,10 @@ class BotController extends  \App\Http\Controllers\API\Controller
      * summary="sendMessage",
      * description="sendMessage by api_token, text",
      * operationId="sendMessage",
-     * tags={"BOT"},
+     * tags={"AlertManager"},
      * @OA\RequestBody(
      *    required=true,
-     *    description="bot",
+     *    description="Бот воспринимает только text = английский",
      *    @OA\JsonContent(
      *       required={"api_token", "text"},
      *       @OA\Property(property="api_token", type="string", example="OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj"),
