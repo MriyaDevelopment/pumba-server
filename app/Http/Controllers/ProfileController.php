@@ -4,6 +4,8 @@
 namespace App\Http\Controllers;
 use App\Messages\Messages;
 use App\Models\Child;
+use App\Models\Memory;
+use App\Models\Reminder;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\API\Controller;
 use Illuminate\Http\Request;
@@ -184,20 +186,36 @@ class ProfileController extends Controller
      */
     public function delete(Request $request): JsonResponse {
 
-        $api_token = $request['api_token'];
-
-        $profile = $this->getUserByToken($api_token);
+        $profile = $this->getUserByToken($request['api_token']);
 
         if (!$profile) {
             return $this->sendError(Messages::profileError);
         }
 
-        $profile->take(1)->delete();
+        $profile->delete();
 
-        $children = $this->getChildrenByToken($api_token);
+        $children = $this->getChildrenByToken($request['api_token']);
 
-        foreach ($children as $child) {
-            Child::where('id', $child['id'])->take(1)->delete();
+        if ($children) {
+            foreach ($children as $child) {
+                Child::where('id', $child['id'])->delete();
+            }
+        }
+
+        $memories = Memory::where('api_token', $request['api_token'])->get();
+
+        if ($memories) {
+            foreach ($memories as $memory) {
+                Memory::where('id', $memory['id'])->delete();
+            }
+        }
+
+        $reminders = Reminder::where('api_token', $request['api_token'])->get();
+
+        if ($reminders) {
+            foreach ($reminders as $reminder) {
+                Reminder::where('id', $reminder['id'])->delete();
+            }
         }
 
         return $this->sendSuccess(Messages::profileDeleteSuccess);
