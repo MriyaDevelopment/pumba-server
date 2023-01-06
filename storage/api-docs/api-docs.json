@@ -11,14 +11,14 @@
         }
     ],
     "paths": {
-        "/sendMessage": {
+        "/sendAlert": {
             "post": {
                 "tags": [
                     "AlertManager"
                 ],
-                "summary": "sendMessage",
-                "description": "sendMessage by api_token, text",
-                "operationId": "sendMessage",
+                "summary": "sendAlert",
+                "description": "sendAlert by api_token, text",
+                "operationId": "sendAlert",
                 "requestBody": {
                     "description": "Бот воспринимает только text = английский",
                     "required": true,
@@ -2255,9 +2255,9 @@
     },
     "components": {
         "securitySchemes": {
-            "api_token": {
+            "Authorization": {
                 "type": "http",
-                "name": "api_token",
+                "name": "Authorization",
                 "in": "header",
                 "bearerFormat": "JWT",
                 "scheme": "bearer"

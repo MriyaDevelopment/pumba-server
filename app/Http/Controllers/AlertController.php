@@ -11,10 +11,10 @@ class AlertController extends  \App\Http\Controllers\API\Controller
 {
     /**
      * @OA\Post(
-     * path="/sendMessage",
-     * summary="sendMessage",
-     * description="sendMessage by api_token, text",
-     * operationId="sendMessage",
+     * path="/sendAlert",
+     * summary="sendAlert",
+     * description="sendAlert by api_token, text",
+     * operationId="sendAlert",
      * tags={"AlertManager"},
      * @OA\RequestBody(
      *    required=true,
@@ -45,7 +45,7 @@ class AlertController extends  \App\Http\Controllers\API\Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function sendMessage(Request $request): JsonResponse {
+    public function sendAlert(Request $request): JsonResponse {
 
         $user = $this->getUserByToken($request['api_token']);
         if (!$user) {

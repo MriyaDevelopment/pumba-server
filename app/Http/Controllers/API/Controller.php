@@ -18,9 +18,9 @@ use Illuminate\Support\Facades\Storage;
  *     url="http://ovz5.j04713753.0n03n.vps.myjino.ru/public/api/"
  * )
  * @OA\SecurityScheme(
- *    securityScheme="api_token",
+ *    securityScheme="Authorization",
  *    in="header",
- *    name="api_token",
+ *    name="Authorization",
  *    type="http",
  *    scheme="bearer",
  *    bearerFormat="JWT",

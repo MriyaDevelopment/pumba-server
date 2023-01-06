@@ -91,4 +91,4 @@ Route::post('updateFcmToken', [FCMController::class, 'updateFcmToken']);
 Route::post('sendTestFCMMessage', [FCMController::class, 'sendTestFCMMessage']);
 
 //TELEGRAM BOT
-Route::post('sendMessage', [AlertController::class, 'sendMessage']);
+Route::post('sendAlert', [AlertController::class, 'sendAlert']);
