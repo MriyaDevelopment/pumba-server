@@ -17,7 +17,7 @@
                     "AlertManager"
                 ],
                 "summary": "sendAlert",
-                "description": "sendAlert by api_token, text",
+                "description": "sendAlert by (Header - api_token), text",
                 "operationId": "sendAlert",
                 "requestBody": {
                     "description": "Бот воспринимает только text = английский",
@@ -26,14 +26,9 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "api_token",
                                     "text"
                                 ],
                                 "properties": {
-                                    "api_token": {
-                                        "type": "string",
-                                        "example": "OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj"
-                                    },
                                     "text": {
                                         "type": "string",
                                         "example": "Error"
@@ -85,7 +80,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ]
             }
         },
         "/login": {
@@ -418,26 +418,6 @@
                 "summary": "Children",
                 "description": "Children by api_token",
                 "operationId": "children",
-                "requestBody": {
-                    "description": "Api token",
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "api_token"
-                                ],
-                                "properties": {
-                                    "api_token": {
-                                        "type": "string",
-                                        "example": "OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
                 "responses": {
                     "401": {
                         "description": "Wrong credentials response",
@@ -505,7 +485,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ]
             }
         },
         "/editChild": {
@@ -514,7 +499,7 @@
                     "Child"
                 ],
                 "summary": "editChild",
-                "description": "editChild by api_token, name, avatar, id, gender, birth",
+                "description": "editChild by name, avatar, id, gender, birth",
                 "operationId": "editChild",
                 "requestBody": {
                     "description": "Pass user credentials",
@@ -523,7 +508,6 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "api_token",
                                     "name",
                                     "id",
                                     "gender",
@@ -533,10 +517,6 @@
                                     "id": {
                                         "type": "string",
                                         "example": 0
-                                    },
-                                    "api_token": {
-                                        "type": "string",
-                                        "example": "OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj"
                                     },
                                     "name": {
                                         "type": "string",
@@ -601,7 +581,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ]
             }
         },
         "/deleteChild": {
@@ -610,7 +595,7 @@
                     "Child"
                 ],
                 "summary": "deleteChild",
-                "description": "deleteChild by api_token, id",
+                "description": "deleteChild by id",
                 "operationId": "deleteChild",
                 "requestBody": {
                     "description": "Pass user credentials",
@@ -619,16 +604,12 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "api_token"
+                                    "id"
                                 ],
                                 "properties": {
                                     "id": {
                                         "type": "string",
                                         "example": 0
-                                    },
-                                    "api_token": {
-                                        "type": "string",
-                                        "example": "OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj"
                                     }
                                 },
                                 "type": "object"
@@ -677,7 +658,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ]
             }
         },
         "/addChild": {
@@ -686,7 +672,7 @@
                     "Child"
                 ],
                 "summary": "addChild",
-                "description": "addChild by api_token, name, avatar, gender, birth",
+                "description": "addChild by name, avatar, gender, birth",
                 "operationId": "addChild",
                 "requestBody": {
                     "description": "Pass user credentials",
@@ -695,16 +681,11 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "api_token",
                                     "name",
                                     "gender",
                                     "birth"
                                 ],
                                 "properties": {
-                                    "api_token": {
-                                        "type": "string",
-                                        "example": "OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj"
-                                    },
                                     "name": {
                                         "type": "string",
                                         "example": "Example"
@@ -768,7 +749,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ]
             }
         },
         "/updateFcmToken": {
@@ -786,14 +772,9 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "api_token",
                                     "fcm_token"
                                 ],
                                 "properties": {
-                                    "api_token": {
-                                        "type": "string",
-                                        "example": "OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj"
-                                    },
                                     "fcm_token": {
                                         "type": "string",
                                         "example": "OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj"
@@ -845,7 +826,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ]
             }
         },
         "/sendTestFCMMessage": {
@@ -854,7 +840,7 @@
                     "FCM"
                 ],
                 "summary": "sendTestFCMMessage",
-                "description": "sendTestFCMMessage by api_token",
+                "description": "sendTestFCMMessage by body, text",
                 "operationId": "sendTestFCMMessage",
                 "requestBody": {
                     "description": "fcm",
@@ -863,15 +849,10 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "api_token",
                                     "body",
                                     "title"
                                 ],
                                 "properties": {
-                                    "api_token": {
-                                        "type": "string",
-                                        "example": "OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj"
-                                    },
                                     "body": {
                                         "type": "string",
                                         "example": "Test"
@@ -927,7 +908,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ]
             }
         },
         "/getGames": {
@@ -938,26 +924,6 @@
                 "summary": "Games",
                 "description": "Games by api_token",
                 "operationId": "games",
-                "requestBody": {
-                    "description": "Api token",
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "api_token"
-                                ],
-                                "properties": {
-                                    "api_token": {
-                                        "type": "string",
-                                        "example": "OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
                 "responses": {
                     "401": {
                         "description": "Wrong credentials response",
@@ -1024,7 +990,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ]
             }
         },
         "/getSubCategoryGuides": {
@@ -1273,7 +1244,6 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "api_token",
                                     "name",
                                     "note",
                                     "image",
@@ -1281,10 +1251,6 @@
                                     "color"
                                 ],
                                 "properties": {
-                                    "api_token": {
-                                        "type": "string",
-                                        "example": "OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj"
-                                    },
                                     "name": {
                                         "type": "string",
                                         "example": "Example"
@@ -1349,7 +1315,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ]
             }
         },
         "/getMemories": {
@@ -1361,19 +1332,15 @@
                 "description": "Memories by api_token, childId",
                 "operationId": "memories",
                 "requestBody": {
-                    "description": "Api token",
+                    "description": "child id",
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "api_token, childId"
+                                    "childId"
                                 ],
                                 "properties": {
-                                    "api_token": {
-                                        "type": "string",
-                                        "example": "OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj"
-                                    },
                                     "childId": {
                                         "type": "string",
                                         "example": "0"
@@ -1447,7 +1414,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ]
             }
         },
         "/deleteMemory": {
@@ -1465,15 +1437,11 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "api_token"
+                                    "id"
                                 ],
                                 "properties": {
                                     "id": {
                                         "type": "string"
-                                    },
-                                    "api_token": {
-                                        "type": "string",
-                                        "example": "OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj"
                                     }
                                 },
                                 "type": "object"
@@ -1522,7 +1490,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ]
             }
         },
         "/editMemory": {
@@ -1611,7 +1584,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ]
             }
         },
         "/getProfile": {
@@ -1622,26 +1600,6 @@
                 "summary": "Profile",
                 "description": "Profile by api_token",
                 "operationId": "profile",
-                "requestBody": {
-                    "description": "Api token",
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "api_token"
-                                ],
-                                "properties": {
-                                    "api_token": {
-                                        "type": "string",
-                                        "example": "OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
                 "responses": {
                     "401": {
                         "description": "Wrong credentials response",
@@ -1690,7 +1648,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ]
             }
         },
         "/editProfile": {
@@ -1708,15 +1671,10 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "api_token",
                                     "name",
                                     "role"
                                 ],
                                 "properties": {
-                                    "api_token": {
-                                        "type": "string",
-                                        "example": "OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj"
-                                    },
                                     "name": {
                                         "type": "string",
                                         "example": "Example"
@@ -1776,7 +1734,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ]
             }
         },
         "/deleteProfile": {
@@ -1787,26 +1750,6 @@
                 "summary": "deleteProfile",
                 "description": "deleteProfile by api_token",
                 "operationId": "deleteProfile",
-                "requestBody": {
-                    "description": "Pass user credentials",
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "api_token"
-                                ],
-                                "properties": {
-                                    "api_token": {
-                                        "type": "string",
-                                        "example": "OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
                 "responses": {
                     "401": {
                         "description": "Wrong credentials response",
@@ -1848,7 +1791,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ]
             }
         },
         "/getReminders": {
@@ -1859,26 +1807,6 @@
                 "summary": "Reminder",
                 "description": "Reminders by api_token",
                 "operationId": "reminder",
-                "requestBody": {
-                    "description": "Api Token",
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "api_token"
-                                ],
-                                "properties": {
-                                    "api_token": {
-                                        "type": "string",
-                                        "example": "OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
                 "responses": {
                     "401": {
                         "description": "Wrong credentials response",
@@ -1955,7 +1883,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ]
             }
         },
         "/addReminder": {
@@ -1973,7 +1906,6 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "api_token",
                                     "name",
                                     "note",
                                     "time",
@@ -1983,10 +1915,6 @@
                                     "type"
                                 ],
                                 "properties": {
-                                    "api_token": {
-                                        "type": "string",
-                                        "example": "OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj"
-                                    },
                                     "name": {
                                         "type": "string",
                                         "example": "Example"
@@ -2061,7 +1989,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ]
             }
         },
         "/deleteReminder": {
@@ -2079,14 +2012,9 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "api_token",
                                     "id"
                                 ],
                                 "properties": {
-                                    "api_token": {
-                                        "type": "string",
-                                        "example": "OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj"
-                                    },
                                     "id": {
                                         "type": "string",
                                         "example": 0
@@ -2138,7 +2066,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ]
             }
         },
         "/editReminder": {
@@ -2157,7 +2090,6 @@
                             "schema": {
                                 "required": [
                                     "id",
-                                    "api_token",
                                     "name",
                                     "note",
                                     "time",
@@ -2170,10 +2102,6 @@
                                     "id": {
                                         "type": "string",
                                         "example": 0
-                                    },
-                                    "api_token": {
-                                        "type": "string",
-                                        "example": "OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj"
                                     },
                                     "name": {
                                         "type": "string",
@@ -2249,7 +2177,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ]
             }
         }
     },

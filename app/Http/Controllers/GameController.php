@@ -18,14 +18,8 @@ class GameController extends \App\Http\Controllers\API\Controller
      * description="Games by api_token",
      * operationId="games",
      * tags={"Games"},
-     * @OA\RequestBody(
-     *    required=true,
-     *    description="Api token",
-     *    @OA\JsonContent(
-     *       required={"api_token"},
-     *       @OA\Property(property="api_token", type="string", example="OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj")
-     *    ),
-     * ),
+     * security={
+     * {"Authorization": {}}},
      * @OA\Response(
      *    response=401,
      *    description="Wrong credentials response",
@@ -58,6 +52,7 @@ class GameController extends \App\Http\Controllers\API\Controller
      */
     public function get(Request $request): JsonResponse {
 
+        $api_token = substr($request->headers->get('Authorization', ''), 7);
         $games = Game::all();
         $gamesList = [];
         foreach ($games as $game) {

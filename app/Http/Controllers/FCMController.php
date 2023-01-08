@@ -16,13 +16,14 @@ class FCMController extends \App\Http\Controllers\API\Controller
      * summary="updateFcmToken",
      * description="updateFcmToken by api_token, fcm_token",
      * operationId="updateFcmToken",
+     * security={
+     * {"Authorization": {}}},
      * tags={"FCM"},
      * @OA\RequestBody(
      *    required=true,
      *    description="fcm",
      *    @OA\JsonContent(
-     *       required={"api_token","fcm_token"},
-     *       @OA\Property(property="api_token", type="string", example="OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj"),
+     *       required={"fcm_token"},
      *       @OA\Property(property="fcm_token", type="string", example="OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj"),
      *    ),
      * ),
@@ -48,7 +49,8 @@ class FCMController extends \App\Http\Controllers\API\Controller
      */
     public function updateFcmToken(Request $request): JsonResponse
     {
-        $user = $this->getUserByToken($request['api_token']);
+        $api_token = substr($request->headers->get('Authorization', ''), 7);
+        $user = $this->getUserByToken($api_token);
         if (!$user) {
             return $this->sendError(Messages::userError);
         }
@@ -61,15 +63,16 @@ class FCMController extends \App\Http\Controllers\API\Controller
      * @OA\Post(
      * path="/sendTestFCMMessage",
      * summary="sendTestFCMMessage",
-     * description="sendTestFCMMessage by api_token",
+     * description="sendTestFCMMessage by body, text",
      * operationId="sendTestFCMMessage",
+     * security={
+     * {"Authorization": {}}},
      * tags={"FCM"},
      * @OA\RequestBody(
      *    required=true,
      *    description="fcm",
      *    @OA\JsonContent(
-     *       required={"api_token", "body", "title"},
-     *       @OA\Property(property="api_token", type="string", example="OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj"),
+     *       required={"body", "title"},
      *       @OA\Property(property="body", type="string", example="Test"),
      *       @OA\Property(property="title", type="string", example="Test"),
      *    ),
@@ -95,7 +98,10 @@ class FCMController extends \App\Http\Controllers\API\Controller
      * @return JsonResponse
      */
     public function sendTestFCMMessage(Request $request): JsonResponse {
-        $user = $this->getUserByToken($request['api_token']);
+
+        $api_token = substr($request->headers->get('Authorization', ''), 7);
+
+        $user = $this->getUserByToken($api_token);
         if (!$user) {
             return $this->sendError(Messages::userError);
         }

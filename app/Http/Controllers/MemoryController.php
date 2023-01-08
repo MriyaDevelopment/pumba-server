@@ -18,13 +18,14 @@ class MemoryController extends \App\Http\Controllers\API\Controller
      * summary="addMemory",
      * description="addMemory by api_token, childId, image, note, name, color",
      * operationId="addMemory",
+     * security={
+     * {"Authorization": {}}},
      * tags={"Memories"},
      * @OA\RequestBody(
      *    required=true,
      *    description="Pass user credentials",
      *    @OA\JsonContent(
-     *       required={"api_token", "name", "note", "image", "childId", "color"},
-     *       @OA\Property(property="api_token", type="string", example="OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj"),
+     *       required={"name", "note", "image", "childId", "color"},
      *       @OA\Property(property="name", type="string", example="Example"),
      *       @OA\Property(property="note", type="string"),
      *       @OA\Property(property="color", type="string"),
@@ -53,8 +54,10 @@ class MemoryController extends \App\Http\Controllers\API\Controller
      * @return JsonResponse
      */
     public function add(Request $request): JsonResponse {
+
+        $api_token = substr($request->headers->get('Authorization', ''), 7);
+
         $validator = Validator::make($request->all(), [
-            'api_token' => 'required|string',
             'childId' => 'required|string',
             'image' => 'required|string',
             'name' => 'required|string',
@@ -66,7 +69,7 @@ class MemoryController extends \App\Http\Controllers\API\Controller
             return $this->sendError(Messages::allFieldsError);
         }
 
-        if (!$this->getUserByToken($request['api_token'])) {
+        if (!$this->getUserByToken($api_token)) {
             return $this->sendError(Messages::userError);
         }
 
@@ -75,7 +78,7 @@ class MemoryController extends \App\Http\Controllers\API\Controller
 
         Memory::forceCreate([
             'childId' => $request['childId'],
-            'api_token' => $request['api_token'],
+            'api_token' => $api_token,
             'name' => $request['name'],
             'note' => $request['note'],
             'color' => $request['color'],
@@ -91,13 +94,14 @@ class MemoryController extends \App\Http\Controllers\API\Controller
      * summary="Memories",
      * description="Memories by api_token, childId",
      * operationId="memories",
+     * security={
+     * {"Authorization": {}}},
      * tags={"Memories"},
      * @OA\RequestBody(
      *    required=true,
-     *    description="Api token",
+     *    description="child id",
      *    @OA\JsonContent(
-     *       required={"api_token, childId"},
-     *       @OA\Property(property="api_token", type="string", example="OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj"),
+     *       required={"childId"},
      *       @OA\Property(property="childId", type="string", example="0"),
      *    ),
      * ),
@@ -131,8 +135,9 @@ class MemoryController extends \App\Http\Controllers\API\Controller
      * @return JsonResponse
      */
     public function get(Request $request): JsonResponse {
+        $api_token = substr($request->headers->get('Authorization', ''), 7);
+
         $validator = Validator::make($request->all(), [
-            'api_token' => 'required|string',
             'childId' => 'required|string',
         ]);
 
@@ -140,7 +145,7 @@ class MemoryController extends \App\Http\Controllers\API\Controller
             return $this->sendError(Messages::allFieldsError);
         }
 
-        if (!$this->getUserByToken($request['api_token'])) {
+        if (!$this->getUserByToken($api_token)) {
             return $this->sendError(Messages::userError);
         }
 
@@ -155,14 +160,15 @@ class MemoryController extends \App\Http\Controllers\API\Controller
      * summary="deleteMemory",
      * description="deleteMemory by api_token, id",
      * operationId="deleteMemory",
+     * security={
+     * {"Authorization": {}}},
      * tags={"Memories"},
      * @OA\RequestBody(
      *    required=true,
      *    description="Pass user credentials",
      *    @OA\JsonContent(
-     *       required={"api_token"},
+     *       required={"id"},
      *       @OA\Property(property="id", type="string"),
-     *       @OA\Property(property="api_token", type="string", example="OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj")
      *    ),
      * ),
      * @OA\Response(
@@ -186,12 +192,19 @@ class MemoryController extends \App\Http\Controllers\API\Controller
      * @return JsonResponse
      */
     public function delete(Request $request): JsonResponse {
+
+        $api_token = substr($request->headers->get('Authorization', ''), 7);
+
         $validator = Validator::make($request->all(), [
             'id' => 'required|string',
         ]);
 
         if ($validator->fails()) {
             return $this->sendError(Messages::allFieldsError);
+        }
+
+        if (!$this->getUserByToken($api_token)) {
+            return $this->sendError(Messages::userError);
         }
 
         Memory::where('id', $request['id'])->take(1)->delete();
@@ -204,6 +217,8 @@ class MemoryController extends \App\Http\Controllers\API\Controller
      * summary="editMemory",
      * description="editMemory by id, image, note, name, color",
      * operationId="editMemory",
+     * security={
+     * {"Authorization": {}}},
      * tags={"Memories"},
      * @OA\RequestBody(
      *    required=true,
@@ -238,6 +253,9 @@ class MemoryController extends \App\Http\Controllers\API\Controller
      * @return JsonResponse
      */
     public function edit(Request $request): JsonResponse {
+
+        $api_token = substr($request->headers->get('Authorization', ''), 7);
+
         $validator = Validator::make($request->all(), [
             'id' => 'required|string',
             'image' => 'required|string',
@@ -248,6 +266,10 @@ class MemoryController extends \App\Http\Controllers\API\Controller
 
         if ($validator->fails()) {
             return $this->sendError(Messages::allFieldsError);
+        }
+
+        if (!$this->getUserByToken($api_token)) {
+            return $this->sendError(Messages::userError);
         }
 
         $memory = Memory::where('id', $request['id'])->firts();

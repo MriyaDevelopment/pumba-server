@@ -17,15 +17,9 @@ class ChildController extends \App\Http\Controllers\API\Controller
      * summary="Children",
      * description="Children by api_token",
      * operationId="children",
+     * security={
+     * {"Authorization": {}}},
      * tags={"Child"},
-     * @OA\RequestBody(
-     *    required=true,
-     *    description="Api token",
-     *    @OA\JsonContent(
-     *       required={"api_token"},
-     *       @OA\Property(property="api_token", type="string", example="OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj")
-     *    ),
-     * ),
      * @OA\Response(
      *    response=401,
      *    description="Wrong credentials response",
@@ -57,15 +51,8 @@ class ChildController extends \App\Http\Controllers\API\Controller
      */
     public function get(Request $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
-            'api_token' => 'required|string'
-        ]);
 
-        if ($validator->fails()) {
-            return $this->sendError(Messages::allFieldsError);
-        }
-
-        $api_token = $request['api_token'];
+        $api_token = substr($request->headers->get('Authorization', ''), 7);
 
         $user = $this->getUserByToken($api_token);
 
@@ -82,16 +69,17 @@ class ChildController extends \App\Http\Controllers\API\Controller
      * @OA\Post(
      * path="/editChild",
      * summary="editChild",
-     * description="editChild by api_token, name, avatar, id, gender, birth",
+     * description="editChild by name, avatar, id, gender, birth",
      * operationId="editChild",
+     * security={
+     * {"Authorization": {}}},
      * tags={"Child"},
      * @OA\RequestBody(
      *    required=true,
      *    description="Pass user credentials",
      *    @OA\JsonContent(
-     *       required={"api_token", "name", "id", "gender", "birth"},
+     *       required={"name", "id", "gender", "birth"},
      *       @OA\Property(property="id", type="string", example=0),
-     *       @OA\Property(property="api_token", type="string", example="OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj"),
      *       @OA\Property(property="name", type="string", example="Example"),
      *       @OA\Property(property="gender", type="string", example="Enum(Boy, Girl, Neutral)"),
      *       @OA\Property(property="birth", type="string", example="2022-09-08"),
@@ -120,16 +108,15 @@ class ChildController extends \App\Http\Controllers\API\Controller
      */
     public function edit(Request $request): JsonResponse
     {
+        $api_token = substr($request->headers->get('Authorization', ''), 7);
+
         $validator = Validator::make($request->all(), [
-            'api_token' => 'required|string',
-            'id' => 'required|integer'
+            'id' => 'required|string'
         ]);
 
         if ($validator->fails()) {
             return $this->sendError(Messages::allFieldsError);
         }
-
-        $api_token = $request['api_token'];
 
         $user = $this->getUserByToken($api_token);
 
@@ -182,16 +169,17 @@ class ChildController extends \App\Http\Controllers\API\Controller
      * @OA\Post(
      * path="/deleteChild",
      * summary="deleteChild",
-     * description="deleteChild by api_token, id",
+     * description="deleteChild by id",
      * operationId="deleteChild",
+     * security={
+     * {"Authorization": {}}},
      * tags={"Child"},
      * @OA\RequestBody(
      *    required=true,
      *    description="Pass user credentials",
      *    @OA\JsonContent(
-     *       required={"api_token"},
-     *       @OA\Property(property="id", type="string", example=0),
-     *       @OA\Property(property="api_token", type="string", example="OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj")
+     *       required={"id"},
+     *       @OA\Property(property="id", type="string", example=0)
      *    ),
      * ),
      * @OA\Response(
@@ -216,17 +204,15 @@ class ChildController extends \App\Http\Controllers\API\Controller
      */
     public function delete(Request $request): JsonResponse
     {
+        $api_token = substr($request->headers->get('Authorization', ''), 7);
 
         $validator = Validator::make($request->all(), [
-            'api_token' => 'required|string',
             'id' => 'required|string'
         ]);
 
         if ($validator->fails()) {
             return $this->sendError(Messages::allFieldsError);
         }
-
-        $api_token = $request['api_token'];
 
         $user = $this->getUserByToken($api_token);
 
@@ -251,15 +237,16 @@ class ChildController extends \App\Http\Controllers\API\Controller
      * @OA\Post(
      * path="/addChild",
      * summary="addChild",
-     * description="addChild by api_token, name, avatar, gender, birth",
+     * description="addChild by name, avatar, gender, birth",
      * operationId="addChild",
+     * security={
+     * {"Authorization": {}}},
      * tags={"Child"},
      * @OA\RequestBody(
      *    required=true,
      *    description="Pass user credentials",
      *    @OA\JsonContent(
-     *       required={"api_token", "name", "gender", "birth"},
-     *       @OA\Property(property="api_token", type="string", example="OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj"),
+     *       required={"name", "gender", "birth"},
      *       @OA\Property(property="name", type="string", example="Example"),
      *       @OA\Property(property="gender", type="string", example="Enum(Boy, Girl, Neutral)"),
      *       @OA\Property(property="birth", type="string", example="2022-09-08"),
@@ -288,8 +275,9 @@ class ChildController extends \App\Http\Controllers\API\Controller
      */
     public function add(Request $request): JsonResponse
     {
+        $api_token = substr($request->headers->get('Authorization', ''), 7);
+
         $validator = Validator::make($request->all(), [
-            'api_token' => 'required|string',
             'name' => 'required|string',
             'gender' => 'required|string',
             'birth' => 'required|string',
@@ -298,8 +286,6 @@ class ChildController extends \App\Http\Controllers\API\Controller
         if ($validator->fails()) {
             return $this->sendError(Messages::allFieldsError);
         }
-
-        $api_token = $request['api_token'];
 
         $user = $this->getUserByToken($api_token);
 

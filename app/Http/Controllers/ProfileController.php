@@ -19,15 +19,9 @@ class ProfileController extends Controller
      * summary="Profile",
      * description="Profile by api_token",
      * operationId="profile",
+     * security={
+     * {"Authorization": {}}},
      * tags={"Profile"},
-     * @OA\RequestBody(
-     *    required=true,
-     *    description="Api token",
-     *    @OA\JsonContent(
-     *       required={"api_token"},
-     *       @OA\Property(property="api_token", type="string", example="OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj")
-     *    ),
-     * ),
      * @OA\Response(
      *    response=401,
      *    description="Wrong credentials response",
@@ -50,7 +44,9 @@ class ProfileController extends Controller
      */
     public function get(Request $request): JsonResponse {
 
-        $profile = $this->getUserByToken($request['api_token']);
+        $api_token = substr($request->headers->get('Authorization', ''), 7);
+
+        $profile = $this->getUserByToken($api_token);
 
         if (!$profile) {
             return $this->sendError(Messages::profileError);
@@ -65,13 +61,14 @@ class ProfileController extends Controller
      * summary="editProfile",
      * description="editProfile by api_token, name, avatar, role",
      * operationId="editProfile",
+     * security={
+     * {"Authorization": {}}},
      * tags={"Profile"},
      * @OA\RequestBody(
      *    required=true,
      *    description="Pass user credentials",
      *    @OA\JsonContent(
-     *       required={"api_token", "name", "role"},
-     *       @OA\Property(property="api_token", type="string", example="OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj"),
+     *       required={"name", "role"},
      *       @OA\Property(property="name", type="string", example="Example"),
      *       @OA\Property(property="role", type="string", example="Enum(Mother, Father, Other)"),
      *       @OA\Property(property="avatar", type="string", example="1669926220.png or Base64 or Null(удали поле опционально null/nil)"),
@@ -101,7 +98,7 @@ class ProfileController extends Controller
 
         $input = $request->all();
 
-        $api_token = $input['api_token'];
+        $api_token = substr($request->headers->get('Authorization', ''), 7);
 
         $profile = $this->getUserByToken($api_token);
 
@@ -156,14 +153,8 @@ class ProfileController extends Controller
      * description="deleteProfile by api_token",
      * operationId="deleteProfile",
      * tags={"Profile"},
-     * @OA\RequestBody(
-     *    required=true,
-     *    description="Pass user credentials",
-     *    @OA\JsonContent(
-     *       required={"api_token"},
-     *       @OA\Property(property="api_token", type="string", example="OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj")
-     *    ),
-     * ),
+     * security={
+     * {"Authorization": {}}},
      * @OA\Response(
      *    response=401,
      *    description="Wrong credentials response",
@@ -186,7 +177,9 @@ class ProfileController extends Controller
      */
     public function delete(Request $request): JsonResponse {
 
-        $profile = $this->getUserByToken($request['api_token']);
+        $api_token = substr($request->headers->get('Authorization', ''), 7);
+
+        $profile = $this->getUserByToken($api_token);
 
         if (!$profile) {
             return $this->sendError(Messages::profileError);
@@ -194,7 +187,7 @@ class ProfileController extends Controller
 
         $profile->delete();
 
-        $children = $this->getChildrenByToken($request['api_token']);
+        $children = $this->getChildrenByToken($api_token);
 
         if ($children) {
             foreach ($children as $child) {
@@ -202,7 +195,7 @@ class ProfileController extends Controller
             }
         }
 
-        $memories = Memory::where('api_token', $request['api_token'])->get();
+        $memories = Memory::where('api_token', $api_token)->get();
 
         if ($memories) {
             foreach ($memories as $memory) {
@@ -210,7 +203,7 @@ class ProfileController extends Controller
             }
         }
 
-        $reminders = Reminder::where('api_token', $request['api_token'])->get();
+        $reminders = Reminder::where('api_token', $api_token)->get();
 
         if ($reminders) {
             foreach ($reminders as $reminder) {

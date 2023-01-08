@@ -18,15 +18,9 @@ class ReminderController extends \App\Http\Controllers\API\Controller
      * summary="Reminder",
      * description="Reminders by api_token",
      * operationId="reminder",
+     * security={
+     * {"Authorization": {}}},
      * tags={"Reminder"},
-     * @OA\RequestBody(
-     *    required=true,
-     *    description="Api Token",
-     *    @OA\JsonContent(
-     *       required={"api_token"},
-     *       @OA\Property(property="api_token", type="string", example="OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj")
-     *    ),
-     * ),
      * @OA\Response(
      *    response=401,
      *    description="Wrong credentials response",
@@ -60,19 +54,9 @@ class ReminderController extends \App\Http\Controllers\API\Controller
      */
     public function get(Request $request): JsonResponse {
 
-        $validator = Validator::make($request->all(), [
-            'api_token' => 'required|string'
-        ]);
+        $api_token = substr($request->headers->get('Authorization', ''), 7);
 
-        if ($validator->fails()) {
-            return $this->sendError(Messages::allFieldsError);
-        }
-
-        $api_token = $request['api_token'];
-
-        $user = $this->getUserByToken($api_token);
-
-        if (!$user) {
+        if (!$this->getUserByToken($api_token)) {
             return $this->sendError(Messages::userError);
         }
 
@@ -87,13 +71,14 @@ class ReminderController extends \App\Http\Controllers\API\Controller
      * summary="addReminder",
      * description="addReminder by api_token, name, note, time, date, repeat, color, type",
      * operationId="addReminder",
+     * security={
+     * {"Authorization": {}}},
      * tags={"Reminder"},
      * @OA\RequestBody(
      *    required=true,
      *    description="Pass user credentials",
      *    @OA\JsonContent(
-     *       required={"api_token", "name", "note", "time", "date", "repeat", "color", "type"},
-     *       @OA\Property(property="api_token", type="string", example="OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj"),
+     *       required={"name", "note", "time", "date", "repeat", "color", "type"},
      *       @OA\Property(property="name", type="string", example="Example"),
      *       @OA\Property(property="note", type="string"),
      *       @OA\Property(property="time", type="string", example="HH:mm"),
@@ -125,8 +110,9 @@ class ReminderController extends \App\Http\Controllers\API\Controller
      */
     public function add(Request $request): JsonResponse {
 
+        $api_token = substr($request->headers->get('Authorization', ''), 7);
+
         $validator = Validator::make($request->all(), [
-            'api_token' => 'required|string',
             'name' => 'required|string',
             'note' => 'required|string',
             'time' => 'required|string',
@@ -139,8 +125,6 @@ class ReminderController extends \App\Http\Controllers\API\Controller
         if ($validator->fails()) {
             return $this->sendError(Messages::allFieldsError);
         }
-
-        $api_token = $request['api_token'];
 
         $user = $this->getUserByToken($api_token);
 
@@ -178,13 +162,14 @@ class ReminderController extends \App\Http\Controllers\API\Controller
      * summary="deleteReminder",
      * description="deleteReminder by api_token, id",
      * operationId="deleteReminder",
+     * security={
+     * {"Authorization": {}}},
      * tags={"Reminder"},
      * @OA\RequestBody(
      *    required=true,
      *    description="Pass user credentials",
      *    @OA\JsonContent(
-     *       required={"api_token", "id"},
-     *       @OA\Property(property="api_token", type="string", example="OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj"),
+     *       required={"id"},
      *       @OA\Property(property="id", type="string", example=0)
      *    ),
      * ),
@@ -210,8 +195,9 @@ class ReminderController extends \App\Http\Controllers\API\Controller
      */
     public function delete(Request $request): JsonResponse {
 
+        $api_token = substr($request->headers->get('Authorization', ''), 7);
+
         $validator = Validator::make($request->all(), [
-            'api_token' => 'required|string',
             'id' => 'required|string'
         ]);
 
@@ -219,17 +205,13 @@ class ReminderController extends \App\Http\Controllers\API\Controller
             return $this->sendError(Messages::allFieldsError);
         }
 
-        $api_token = $request['api_token'];
-
         $user = $this->getUserByToken($api_token);
 
         if (!$user) {
             return $this->sendError(Messages::userError);
         }
 
-        $id = $request['id'];
-
-        $reminder = Reminder::where('id', $id)->first();
+        $reminder = Reminder::where('id', $request['id'])->first();
         $reminder->take(1)->delete();
 
         return $this->sendSuccess(Messages::reminderDeleteSuccess);
@@ -241,14 +223,15 @@ class ReminderController extends \App\Http\Controllers\API\Controller
      * summary="editReminder",
      * description="editReminder by id, api_token, name, note, time, date, repeat, color, type",
      * operationId="editReminder",
+     * security={
+     * {"Authorization": {}}},
      * tags={"Reminder"},
      * @OA\RequestBody(
      *    required=true,
      *    description="Pass user credentials",
      *    @OA\JsonContent(
-     *       required={"id", "api_token", "name", "note", "time", "date", "repeat", "color", "type"},
+     *       required={"id", "name", "note", "time", "date", "repeat", "color", "type"},
      *       @OA\Property(property="id", type="string", example=0),
-     *       @OA\Property(property="api_token", type="string", example="OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj"),
      *       @OA\Property(property="name", type="string", example="Example"),
      *       @OA\Property(property="note", type="string"),
      *       @OA\Property(property="time", type="string", example="HH:mm"),
@@ -282,7 +265,6 @@ class ReminderController extends \App\Http\Controllers\API\Controller
 
         $validator = Validator::make($request->all(), [
             'id' => 'required|string',
-            'api_token' => 'required|string',
             'name' => 'required|string',
             'note' => 'required|string',
             'time' => 'required|string',
@@ -296,7 +278,7 @@ class ReminderController extends \App\Http\Controllers\API\Controller
             return $this->sendError(Messages::allFieldsError);
         }
 
-        $api_token = $request['api_token'];
+        $api_token = substr($request->headers->get('Authorization', ''), 7);
 
         $user = $this->getUserByToken($api_token);
 

@@ -13,15 +13,17 @@ class AlertController extends  \App\Http\Controllers\API\Controller
      * @OA\Post(
      * path="/sendAlert",
      * summary="sendAlert",
-     * description="sendAlert by api_token, text",
+     * description="sendAlert by (Header - api_token), text",
      * operationId="sendAlert",
+     * security={
+     * {"Authorization": {}}
+     *       },
      * tags={"AlertManager"},
      * @OA\RequestBody(
      *    required=true,
      *    description="Бот воспринимает только text = английский",
      *    @OA\JsonContent(
-     *       required={"api_token", "text"},
-     *       @OA\Property(property="api_token", type="string", example="OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj"),
+     *       required={"text"},
      *       @OA\Property(property="text", type="string", example="Error"),
      *    ),
      * ),
@@ -47,7 +49,9 @@ class AlertController extends  \App\Http\Controllers\API\Controller
      */
     public function sendAlert(Request $request): JsonResponse {
 
-        $user = $this->getUserByToken($request['api_token']);
+        $api_token = substr($request->headers->get('Authorization', ''), 7);
+        $user = $this->getUserByToken($api_token);
+
         if (!$user) {
             return $this->sendError(Messages::userError);
         }
