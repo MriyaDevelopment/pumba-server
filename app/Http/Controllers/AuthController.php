@@ -112,7 +112,7 @@ class AuthController extends Controller
      *    description="Success",
      *    @OA\JsonContent(
      *       @OA\Property(property="result", type="string", example="success"),
-     *       @OA\Property(property="api_token", type="string", example="Registration completed successfully")
+     *       @OA\Property(property="api_token", type="string", example="OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj")
      *        )
      *     )
      * )
@@ -152,7 +152,7 @@ class AuthController extends Controller
             'api_token' => $api_token,
         ]);
 
-        return $this->sendSuccess(Messages::userRegisterSuccess);
+        return $this->sendResponse($api_token, 'api_token');
     }
 
     /**

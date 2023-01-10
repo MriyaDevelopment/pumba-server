@@ -241,7 +241,7 @@
                                         },
                                         "api_token": {
                                             "type": "string",
-                                            "example": "Registration completed successfully"
+                                            "example": "OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj"
                                         }
                                     },
                                     "type": "object"
