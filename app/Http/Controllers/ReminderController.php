@@ -84,7 +84,7 @@ class ReminderController extends \App\Http\Controllers\API\Controller
      *       @OA\Property(property="time", type="string", example="HH:mm"),
      *       @OA\Property(property="date", type="string", example="Enum(Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday) -> String or format(yyyy-MM-dd) -> String"),
      *       @OA\Property(property="repeat", type="boolean", example="true"),
-     *       @OA\Property(property="color", type="string", example="Enum(Orange, Blue, LightBlue, Green, Purple, Yellow, Pink) -> String"),
+     *       @OA\Property(property="color", type="string", example="Enum(Orange, Blue, LightBlue, Green, Purple, Yellow, Pink, NotColor) -> String"),
      *       @OA\Property(property="type", type="string", example="Enum(Custom, Template) ->String"),
      *    ),
      * ),

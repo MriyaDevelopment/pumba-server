@@ -1936,7 +1936,7 @@
                                     },
                                     "color": {
                                         "type": "string",
-                                        "example": "Enum(Orange, Blue, LightBlue, Green, Purple, Yellow, Pink) -> String"
+                                        "example": "Enum(Orange, Blue, LightBlue, Green, Purple, Yellow, Pink, NotColor) -> String"
                                     },
                                     "type": {
                                         "type": "string",
