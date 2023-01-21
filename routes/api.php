@@ -10,6 +10,7 @@ use App\Http\Controllers\MailerController;
 use App\Http\Controllers\MemoryController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReminderController;
+use App\Http\Controllers\ToothController;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Route;
@@ -57,6 +58,7 @@ Route::post('changeEmail', [AuthController::class, 'changeEmail']);
 Route::post('getProfile', [ProfileController::class, 'get']);
 Route::post('deleteProfile', [ProfileController::class, 'delete']);
 Route::post('editProfile', [ProfileController::class, 'edit']);
+Route::post('setResultQuiz', [ProfileController::class, 'addFiltersByGames']);
 
 //Child
 Route::post('getChildren', [ChildController::class, 'get']);
@@ -81,6 +83,11 @@ Route::post('deleteMemory', [MemoryController::class, 'delete']);
 
 //Games
 Route::post('getGames', [GameController::class, 'get']);
+Route::post('saveGame', [GameController::class, 'save']);
+
+//Teeth
+Route::post('getDropedTeeth', [ToothController::class, 'get']);
+Route::post('setDropedTooth', [ToothController::class, 'set']);
 
 //Mailer
 Route::post('sendLetter', [MailerController::class, 'sendLetter']);

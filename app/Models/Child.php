@@ -20,4 +20,6 @@ class Child extends Model
         'updated_at',
         'created_at'
     ];
+
+    protected $table = 'children';
 }

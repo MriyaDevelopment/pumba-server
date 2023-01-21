@@ -83,7 +83,7 @@ class ReminderController extends \App\Http\Controllers\API\Controller
      *       @OA\Property(property="note", type="string"),
      *       @OA\Property(property="time", type="string", example="HH:mm"),
      *       @OA\Property(property="date", type="string", example="Enum(Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday) -> String or format(yyyy-MM-dd) -> String"),
-     *       @OA\Property(property="repeat", type="boolean", example="true"),
+     *       @OA\Property(property="repeat", type="string", example="1 == true or 0 == false -> Отправляем строкой!"),
      *       @OA\Property(property="color", type="string", example="Enum(Orange, Blue, LightBlue, Green, Purple, Yellow, Pink, NotColor) -> String"),
      *       @OA\Property(property="type", type="string", example="Enum(Custom, Template) ->String"),
      *    ),
@@ -114,10 +114,9 @@ class ReminderController extends \App\Http\Controllers\API\Controller
 
         $validator = Validator::make($request->all(), [
             'name' => 'required|string',
-            'note' => 'required|string',
             'time' => 'required|string',
             'date' => 'required|string',
-            'repeat' => 'required|boolean',
+            'repeat' => 'required|string',
             'color' => 'required|string',
             'type' => 'required|string',
         ]);
@@ -136,7 +135,10 @@ class ReminderController extends \App\Http\Controllers\API\Controller
         $note = $request['note'];
         $time = $request['time'];
         $date = $request['date'];
-        $repeat = $request['repeat'];
+        $repeat = false;
+        if ($request['repeat'] == "1") {
+            $repeat = true;
+        }
         $color = $request['color'];
         $type = $request['type'];
 
@@ -212,7 +214,7 @@ class ReminderController extends \App\Http\Controllers\API\Controller
         }
 
         $reminder = Reminder::where('id', $request['id'])->first();
-        $reminder->take(1)->delete();
+        $reminder->delete();
 
         return $this->sendSuccess(Messages::reminderDeleteSuccess);
     }

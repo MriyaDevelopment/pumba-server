@@ -18,10 +18,17 @@ class User extends Authenticatable
 
     protected $hidden = [
         'password',
+        'time',
+        'ages',
+        'energy_level',
+        'door_type',
+        'stuff',
         'updated_at',
         'created_at',
         'id'
     ];
+
+    protected $table = 'users';
 
     public function routeNotificationForFcm()
     {

@@ -19,4 +19,6 @@ class Inventory extends Model
         'updated_at',
         'created_at'
     ];
+
+    protected $table = 'inventories';
 }

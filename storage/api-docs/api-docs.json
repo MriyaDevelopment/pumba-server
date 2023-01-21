@@ -998,6 +998,86 @@
                 ]
             }
         },
+        "/saveGame": {
+            "post": {
+                "tags": [
+                    "Games"
+                ],
+                "summary": "Saved Games",
+                "description": "Saved Games by api_token, gameId",
+                "operationId": "saved games",
+                "requestBody": {
+                    "description": "Pass user credentials",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "gameId"
+                                ],
+                                "properties": {
+                                    "gameId": {
+                                        "type": "string",
+                                        "example": "123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "401": {
+                        "description": "Wrong credentials response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "User does not exist"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "saveInfo": {
+                                            "type": "object",
+                                            "example": {
+                                                "isSaved": false,
+                                                "gameId": "22"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ]
+            }
+        },
         "/getSubCategoryGuides": {
             "post": {
                 "tags": [
@@ -1799,6 +1879,103 @@
                 ]
             }
         },
+        "/setResultQuiz": {
+            "post": {
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "setResultQuiz",
+                "description": "setResultQuiz by ages, energy_level, door_type, stuff, time",
+                "operationId": "setResultQuiz",
+                "requestBody": {
+                    "description": "Pass user credentials",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "ages",
+                                    "energy_level",
+                                    "door_type",
+                                    "stuff",
+                                    "time"
+                                ],
+                                "properties": {
+                                    "ages": {
+                                        "type": "string",
+                                        "example": "0-1,2-4"
+                                    },
+                                    "energy_level": {
+                                        "type": "string",
+                                        "example": "High"
+                                    },
+                                    "door_type": {
+                                        "type": "string",
+                                        "example": "Indoor / door"
+                                    },
+                                    "stuff": {
+                                        "type": "string",
+                                        "example": "Needed / Not needed"
+                                    },
+                                    "time": {
+                                        "type": "string",
+                                        "example": "10-15,15-30"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "401": {
+                        "description": "Wrong credentials response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "User does not exist"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "success": {
+                                            "type": "string",
+                                            "example": "Filters added successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ]
+            }
+        },
         "/getReminders": {
             "post": {
                 "tags": [
@@ -1931,8 +2108,8 @@
                                         "example": "Enum(Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday) -> String or format(yyyy-MM-dd) -> String"
                                     },
                                     "repeat": {
-                                        "type": "boolean",
-                                        "example": "true"
+                                        "type": "string",
+                                        "example": "1 == true or 0 == false -> Отправляем строкой!"
                                     },
                                     "color": {
                                         "type": "string",
@@ -2170,6 +2347,186 @@
                                         "success": {
                                             "type": "string",
                                             "example": "Reminder edited successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ]
+            }
+        },
+        "/getDropedTeeth": {
+            "post": {
+                "tags": [
+                    "Teeth"
+                ],
+                "summary": "Teeth",
+                "description": "Teeth by api_token, childId",
+                "operationId": "teeth",
+                "requestBody": {
+                    "description": "Pass user credentials",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "childId"
+                                ],
+                                "properties": {
+                                    "childId": {
+                                        "type": "string",
+                                        "example": "19"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "401": {
+                        "description": "Wrong credentials response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "User does not exist"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "teeth": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "tooth": {
+                                                        "type": "object",
+                                                        "example": {
+                                                            "toothId": "22",
+                                                            "childId": "55",
+                                                            "id": "49"
+                                                        }
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ]
+            }
+        },
+        "/setDropedTooth": {
+            "post": {
+                "tags": [
+                    "Teeth"
+                ],
+                "summary": "setDropedTooth",
+                "description": "setDropedTooth by api_token, childId, toothId",
+                "operationId": "tooth",
+                "requestBody": {
+                    "description": "Pass user credentials",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "childId",
+                                    "toothId"
+                                ],
+                                "properties": {
+                                    "childId": {
+                                        "type": "string",
+                                        "example": "2"
+                                    },
+                                    "toothId": {
+                                        "type": "string",
+                                        "example": "12"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "401": {
+                        "description": "Wrong credentials response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "User does not exist"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "toothInfo": {
+                                            "properties": {
+                                                "toothId": {
+                                                    "type": "string",
+                                                    "example": "12"
+                                                },
+                                                "isDroped": {
+                                                    "type": "boolean",
+                                                    "example": false
+                                                }
+                                            },
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"

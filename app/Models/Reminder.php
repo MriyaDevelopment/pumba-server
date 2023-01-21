@@ -20,4 +20,10 @@ class Reminder extends Model
         'updated_at',
         'created_at'
     ];
+
+    protected $casts = [
+        'repeat' => 'boolean',
+    ];
+
+    protected $table = 'reminders';
 }

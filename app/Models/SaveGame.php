@@ -4,21 +4,18 @@
 namespace App\Models;
 
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Guide extends Model
+class SaveGame extends Model
 {
-    use HasFactory;
-
+    protected $table = 'savedGames';
     protected $fillable = [
-        'id', 'name', 'description', 'category'
+        'id', 'gameId'
     ];
 
     protected $hidden = [
+        'api_token',
         'updated_at',
         'created_at'
     ];
-
-    protected $table = 'guides';
 }

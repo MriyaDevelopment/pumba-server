@@ -21,4 +21,6 @@ class Memory extends Model
         'childId',
         'api_token'
     ];
+
+    protected $table = 'memories';
 }

@@ -10,6 +10,7 @@ class Messages {
     const profileEditedSuccess = "Profile edited successfully";
     const profileDeleteSuccess = "User account deleted successfully";
     const profileError = "Profile does not exist";
+    const profileFiltersAddSuccess = "Filters added successfully";
 
     //Auth
     const userError = "User does not exist";

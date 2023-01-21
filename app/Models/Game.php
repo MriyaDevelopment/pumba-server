@@ -19,4 +19,6 @@ class Game extends Model
         'updated_at',
         'created_at'
     ];
+
+    protected $table = 'games';
 }

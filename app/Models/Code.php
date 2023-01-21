@@ -12,4 +12,6 @@ class Code extends Model
     protected $fillable = [
         'id', 'code', 'email'
     ];
+
+    protected $table = 'codes';
 }

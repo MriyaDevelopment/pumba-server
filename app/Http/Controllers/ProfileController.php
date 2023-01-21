@@ -213,4 +213,76 @@ class ProfileController extends Controller
 
         return $this->sendSuccess(Messages::profileDeleteSuccess);
     }
+
+    /**
+     * @OA\Post(
+     * path="/setResultQuiz",
+     * summary="setResultQuiz",
+     * description="setResultQuiz by ages, energy_level, door_type, stuff, time",
+     * operationId="setResultQuiz",
+     * tags={"Profile"},
+     * security={
+     * {"Authorization": {}}},
+     * @OA\RequestBody(
+     *    required=true,
+     *    description="Pass user credentials",
+     *    @OA\JsonContent(
+     *       required={"ages", "energy_level", "door_type", "stuff", "time"},
+     *       @OA\Property(property="ages", type="string", example="0-1,2-4"),
+     *       @OA\Property(property="energy_level", type="string", example="High"),
+     *       @OA\Property(property="door_type", type="string", example="Indoor / door"),
+     *       @OA\Property(property="stuff", type="string", example="Needed / Not needed"),
+     *       @OA\Property(property="time", type="string", example="10-15,15-30"),
+     *    ),
+     * ),
+     * @OA\Response(
+     *    response=401,
+     *    description="Wrong credentials response",
+     *    @OA\JsonContent(
+     *       @OA\Property(property="result", type="string", example="error"),
+     *       @OA\Property(property="error", type="string", example="User does not exist")
+     *    )
+     * ),
+     * @OA\Response(
+     *    response=200,
+     *    description="Success",
+     *    @OA\JsonContent(
+     *       @OA\Property(property="result", type="string", example="success"),
+     *       @OA\Property(property="success", type="string", example="Filters added successfully")
+     *     )
+     *   )
+     * )
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function addFiltersByGames(Request $request): JsonResponse {
+        $api_token = substr($request->headers->get('Authorization', ''), 7);
+
+        $profile = $this->getUserByToken($api_token);
+
+        if (!$profile) {
+            return $this->sendError(Messages::profileError);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'ages' => 'required|string',
+            'energy_level' => 'required|string',
+            'door_type' => 'required|string',
+            'stuff' => 'required|string',
+            'time' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendError(Messages::allFieldsError);
+        }
+
+        $profile->ages = $request['ages'];
+        $profile->energy_level = $request['energy_level'];
+        $profile->door_type = $request['door_type'];
+        $profile->stuff = $request['stuff'];
+        $profile->time = $request['time'];
+        $profile->save();
+
+        return $this->sendSuccess(Messages::profileFiltersAddSuccess);
+    }
 }
