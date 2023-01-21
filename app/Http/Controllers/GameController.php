@@ -7,9 +7,11 @@ use App\Models\Game;
 use App\Models\Guide;
 use App\Models\Inventory;
 use App\Models\SaveGame;
+use Illuminate\Support\Str;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+
 
 class GameController extends \App\Http\Controllers\API\Controller
 {
@@ -55,24 +57,40 @@ class GameController extends \App\Http\Controllers\API\Controller
     public function get(Request $request): JsonResponse {
         $api_token = substr($request->headers->get('Authorization', ''), 7);
 
-        if (!$this->getUserByToken($api_token)) {
+        $user = $this->getUserByToken($api_token);
+        if (!$user) {
             return $this->sendError(Messages::profileError);
         }
 
+        $door_type = $user['door_type'];
+        $ages = $user['ages'];
+        $time = $user['time'];
+        $energy_level = $user['energy_level'];
+        $stuff = $user['stuff'];
+
         $games = Game::all();
         $gamesList = [];
+
         foreach ($games as $game) {
-            $inventory = Inventory::where('gameId', $game['id'])->get();
-            $savedGame = SaveGame::where('api_token', $api_token)->where('gameId', $game['id'])->first();
-            $isSaved = false;
-            if ($savedGame) {
-                $isSaved = true;
+            $isAge = strpos($game['ages'], $ages);
+            $isTime = strpos($game['time'], $time);
+            $isDoor = str_contains($game['door_type'], $door_type);
+            $isEnergyLevel = str_contains($game['energy_level'], $energy_level);
+            $isStuff = str_contains($game['stuff'], $stuff);
+
+            if (($isAge !== false) && ($isTime !== false) && $isDoor && $isEnergyLevel && $isStuff) {
+                $inventory = Inventory::where('gameId', $game['id'])->get();
+                $savedGame = SaveGame::where('api_token', $api_token)->where('gameId', $game['id'])->first();
+                $isSaved = false;
+                if ($savedGame) {
+                    $isSaved = true;
+                }
+                $gamesList[] = [
+                    'game' => $game,
+                    'inventory' => $inventory,
+                    'isSaved' => $isSaved
+                ];
             }
-            $gamesList[] = [
-                'game' => $game,
-                'inventory' => $inventory,
-                'isSaved' => $isSaved
-            ];
         }
 
         return $this->sendResponse($gamesList, 'games');
