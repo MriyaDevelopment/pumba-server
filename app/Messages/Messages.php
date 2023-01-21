@@ -46,6 +46,9 @@ class Messages {
     const codeError = "No such code exists";
     const codeSuccess = "Code is correct";
 
+    //Games
+    const gameError = "This game does not exist";
+
     //FCM
     const fcmUpdatedSuccess = "fcm_token updated success";
 

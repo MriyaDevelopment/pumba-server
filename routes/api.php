@@ -84,6 +84,8 @@ Route::post('deleteMemory', [MemoryController::class, 'delete']);
 //Games
 Route::post('getGames', [GameController::class, 'get']);
 Route::post('saveGame', [GameController::class, 'save']);
+Route::post('getGameById', [GameController::class, 'getById']);
+Route::post('getSavedGames', [GameController::class, 'getSavedGames']);
 
 //Teeth
 Route::post('getDropedTeeth', [ToothController::class, 'get']);
