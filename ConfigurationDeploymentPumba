@@ -1,0 +1,10 @@
+type = SFTP
+SSH configuration {
+Host = ovz5.j04713753.0n03n.vps.myjino.ru
+Port = 49497
+Username = root
+Auth type = Password
+}
+Root path = /var/www/domains/ovz5.j04713753.0n03n.vps.myjino.ru
+Web server URL = http://ovz5.j04713753.0n03n.vps.myjino.ru
+Deployment path = /
