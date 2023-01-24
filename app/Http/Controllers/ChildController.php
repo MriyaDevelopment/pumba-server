@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 
 use App\Messages\Messages;
 use App\Models\Child;
+use App\Models\Memory;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
@@ -300,13 +301,29 @@ class ChildController extends \App\Http\Controllers\API\Controller
         $requestAvatar = $request['avatar'] ?: "requestNull";
         $requestAvatar = $requestAvatar == "requestNull" ? null : $this->uploadImage($requestAvatar);
 
-        Child::forceCreate([
+        $child = Child::forceCreate([
             'name' => $requestName,
             'gender' => $requestGender,
             'birth' => $requestBirth,
             'avatar' => $requestAvatar,
             'api_token' => $api_token
         ]);
+
+        $memories = [
+            "Sleep in my bedroom",
+            "Hey! It’s my first step",
+            "Walk in park",
+            "Go to the zoo",
+            "Play with my favourite toys"
+        ];
+
+        foreach ($memories as $memory) {
+            Memory::forceCreate([
+                'name' => $memory,
+                'childId' => $child['id'],
+                'api_token' => $api_token
+            ]);
+        }
 
         return $this->sendSuccess(Messages::childAddedSuccess);
     }

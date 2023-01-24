@@ -125,13 +125,12 @@ class AuthController extends Controller
 
         $rules = array(
             'email' => 'required|string|email|max:255|unique:users',
-            'name' => 'required|string|unique:users',
+            'name' => 'required|string',
             'password' => 'required|string'
         );
 
         $messages = array(
-            'email.required|string|email|max:255|unique:users' => Messages::userRegisterEmailValidator,
-            'name.required|string|unique:users' => Messages::userRegisterNameValidator,
+            'email.required|string|email|max:255|unique:users' => Messages::userRegisterEmailValidator
         );
 
         $validator = Validator::make($input, $rules, $messages);

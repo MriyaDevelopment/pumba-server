@@ -6,6 +6,7 @@ use App\Messages\Messages;
 use App\Models\Child;
 use App\Models\Memory;
 use App\Models\Reminder;
+use App\Models\Tooth;
 use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\API\Controller;
 use Illuminate\Http\Request;
@@ -208,6 +209,22 @@ class ProfileController extends Controller
         if ($reminders) {
             foreach ($reminders as $reminder) {
                 Reminder::where('id', $reminder['id'])->delete();
+            }
+        }
+
+        $memories = Memory::where('api_token', $api_token)->get();
+
+        if ($memories) {
+            foreach ($memories as $memory) {
+                Memory::where('id', $memory['id'])->delete();
+            }
+        }
+
+        $teeth = Tooth::where('api_token', $api_token)->get();
+
+        if ($teeth) {
+            foreach ($teeth as $tooth) {
+                Memory::where('id', $tooth['id'])->delete();
             }
         }
 

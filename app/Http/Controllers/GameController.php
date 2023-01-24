@@ -87,11 +87,11 @@ class GameController extends \App\Http\Controllers\API\Controller
         foreach ($games as $game) {
             $isAge = strpos($game['ages'], $ages);
             $isTime = strpos($game['time'], $time);
-            $isDoor = str_contains($game['door_type'], $door_type);
+            $isDoor = strpos($game['door_type'], $door_type);
             $isEnergyLevel = str_contains($game['energy_level'], $energy_level);
-            $isStuff = str_contains($game['stuff'], $stuff);
+            $isStuff = strpos($game['stuff'], $stuff);
 
-            if (($isAge !== false) && ($isTime !== false) && $isDoor && $isEnergyLevel && $isStuff) {
+            if (($isAge !== false) && ($isTime !== false) && ($isDoor !== false) && $isEnergyLevel && ($isStuff !== false)) {
                 $inventory = Inventory::where('gameId', $game['id'])->get();
                 $savedGame = SaveGame::where('api_token', $api_token)->where('gameId', $game['id'])->first();
                 $isSaved = false;
