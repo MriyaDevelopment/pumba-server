@@ -17,15 +17,15 @@ class AuthController extends Controller
      * @OA\Post(
      * path="/login",
      * summary="Login",
-     * description="Login by emailOrName, password",
+     * description="Login by email, password",
      * operationId="authLogin",
      * tags={"Auth"},
      * @OA\RequestBody(
      *    required=true,
      *    description="Pass user credentials",
      *    @OA\JsonContent(
-     *       required={"emailOrName","password"},
-     *       @OA\Property(property="emailOrName", type="string", format="name", example="example@example.com"),
+     *       required={"email","password"},
+     *       @OA\Property(property="email", type="string", format="email", example="example@example.com"),
      *       @OA\Property(property="password", type="string", format="password", example="123456"),
      *    ),
      * ),
@@ -54,7 +54,7 @@ class AuthController extends Controller
         $input = $request->all();
 
         $rules = array(
-            'emailOrName' => 'required|string|max:255',
+            'email' => 'required|string|max:255',
             'password' => 'required|string'
         );
 
@@ -64,10 +64,10 @@ class AuthController extends Controller
             return $this->sendError(Messages::allFieldsError);
         }
 
-        $emailOrName = $input['emailOrName'];
+        $email = $input['email'];
         $password = $input['password'];
 
-        $user = User::where('email', $emailOrName)->orWhere('name', $emailOrName)->first();
+        $user = User::where('email', $email)->first();
 
         if (!$user) {
             return $this->sendError(Messages::userError);
@@ -80,6 +80,33 @@ class AuthController extends Controller
         $api_token = $user['api_token'];
 
         return $this->sendResponse($api_token, 'api_token');
+    }
+
+    public function loginViaSocialNetworks(Request $request): JsonResponse {
+
+        $rules = array(
+            'email' => 'required|string|email|max:255|unique:users',
+            'name' => 'required|string',
+            'api_token' => 'required|string'
+        );
+
+        $messages = array(
+            'email.required|string|email|max:255|unique:users' => Messages::userRegisterEmailValidator
+        );
+
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        if ($validator->fails()) {
+            return $this->sendError(Messages::allFieldsError);
+        }
+
+        User::forceCreate([
+            'email' => $request['email'],
+            'name' => $request['name'],
+            'api_token' => $request['api_token'],
+        ]);
+
+        return $this->sendResponse($request['api_token'], 'api_token');
     }
 
     /**
