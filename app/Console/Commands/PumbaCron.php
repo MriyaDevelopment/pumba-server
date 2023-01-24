@@ -33,7 +33,6 @@ class PumbaCron extends Command
     {
         $now = Carbon::now();
 
-        $user = User::all();
         $now->toIso8601String();
         $hms = substr($now, 11);
         $hm = substr($hms, 0,-3);
