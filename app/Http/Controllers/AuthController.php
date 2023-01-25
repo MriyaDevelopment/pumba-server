@@ -82,7 +82,44 @@ class AuthController extends Controller
         return $this->sendResponse($api_token, 'api_token');
     }
 
-    public function loginViaSocialNetworks(Request $request): JsonResponse {
+    /**
+     * @OA\Post(
+     * path="/loginOrRegisterViaSocialNetworks",
+     * summary="loginOrRegisterViaSocialNetworks",
+     * description="LoginOrRegisterViaSocialNetworks by email, name, api_token",
+     * operationId="LoginOrRegisterViaSocialNetworks",
+     * tags={"Auth"},
+     * @OA\RequestBody(
+     *    required=true,
+     *    description="Pass user credentials",
+     *    @OA\JsonContent(
+     *       required={"email","name", "api_token"},
+     *       @OA\Property(property="email", type="string", format="email", example="example@example.com"),
+     *       @OA\Property(property="name", type="string", format="password", example="example"),
+     *       @OA\Property(property="api_token", type="string", format="password", example="1sllsdlsdklskldlkslksdlkdklskl"),
+     *    ),
+     * ),
+     * @OA\Response(
+     *    response=401,
+     *    description="Wrong credentials response",
+     *    @OA\JsonContent(
+     *       @OA\Property(property="result", type="string", example="error"),
+     *       @OA\Property(property="error", type="string", example="User does not exist")
+     *    )
+     * ),
+     * @OA\Response(
+     *    response=200,
+     *    description="Success",
+     *    @OA\JsonContent(
+     *       @OA\Property(property="result", type="string", example="success"),
+     *       @OA\Property(property="api_token", type="string", example="OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj")
+     *        )
+     *     )
+     * )
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function loginOrRegisterViaSocialNetworks(Request $request): JsonResponse {
 
         $rules = array(
             'email' => 'required|string|email|max:255|unique:users',
@@ -100,11 +137,15 @@ class AuthController extends Controller
             return $this->sendError(Messages::allFieldsError);
         }
 
-        User::forceCreate([
-            'email' => $request['email'],
-            'name' => $request['name'],
-            'api_token' => $request['api_token'],
-        ]);
+        $user = $this->getUserByToken($request['api_token']);
+
+        if (!$user) {
+            User::forceCreate([
+                'email' => $request['email'],
+                'name' => $request['name'],
+                'api_token' => $request['api_token'],
+            ]);
+        }
 
         return $this->sendResponse($request['api_token'], 'api_token');
     }

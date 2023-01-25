@@ -53,6 +53,7 @@ Route::post('login', [AuthController::class, 'login']);
 Route::post('register', [AuthController::class, 'register']);
 Route::post('changePassword', [AuthController::class, 'changePassword']);
 Route::post('changeEmail', [AuthController::class, 'changeEmail']);
+Route::post('loginOrRegisterViaSocialNetworks', [AlertController::class, 'loginOrRegisterViaSocialNetworks']);
 
 //Profile
 Route::post('getProfile', [ProfileController::class, 'get']);

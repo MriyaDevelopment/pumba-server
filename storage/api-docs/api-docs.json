@@ -94,7 +94,7 @@
                     "Auth"
                 ],
                 "summary": "Login",
-                "description": "Login by emailOrName, password",
+                "description": "Login by email, password",
                 "operationId": "authLogin",
                 "requestBody": {
                     "description": "Pass user credentials",
@@ -103,19 +103,104 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "emailOrName",
+                                    "email",
                                     "password"
                                 ],
                                 "properties": {
-                                    "emailOrName": {
+                                    "email": {
                                         "type": "string",
-                                        "format": "name",
+                                        "format": "email",
                                         "example": "example@example.com"
                                     },
                                     "password": {
                                         "type": "string",
                                         "format": "password",
                                         "example": "123456"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "401": {
+                        "description": "Wrong credentials response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "User does not exist"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "api_token": {
+                                            "type": "string",
+                                            "example": "OzQ50ke3GElJMNvBZm8uksngp8dqNVYAHqr5CGHN9visYI0TYHg1fFdhsNf8BqTpwqDwXqcPhcxzN3Pj"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/loginOrRegisterViaSocialNetworks": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "loginOrRegisterViaSocialNetworks",
+                "description": "LoginOrRegisterViaSocialNetworks by email, name, api_token",
+                "operationId": "LoginOrRegisterViaSocialNetworks",
+                "requestBody": {
+                    "description": "Pass user credentials",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "name",
+                                    "api_token"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "example@example.com"
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "example"
+                                    },
+                                    "api_token": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "1sllsdlsdklskldlkslksdlkdklskl"
                                     }
                                 },
                                 "type": "object"
