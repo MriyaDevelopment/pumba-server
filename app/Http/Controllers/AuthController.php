@@ -86,17 +86,16 @@ class AuthController extends Controller
      * @OA\Post(
      * path="/loginOrRegisterViaSocialNetworks",
      * summary="loginOrRegisterViaSocialNetworks",
-     * description="LoginOrRegisterViaSocialNetworks by email, name, api_token",
+     * description="LoginOrRegisterViaSocialNetworks by email, name",
      * operationId="LoginOrRegisterViaSocialNetworks",
      * tags={"Auth"},
      * @OA\RequestBody(
      *    required=true,
      *    description="Pass user credentials",
      *    @OA\JsonContent(
-     *       required={"email","name", "api_token"},
+     *       required={"email","name"},
      *       @OA\Property(property="email", type="string", format="email", example="example@example.com"),
-     *       @OA\Property(property="name", type="string", format="password", example="example"),
-     *       @OA\Property(property="api_token", type="string", format="password", example="1sllsdlsdklskldlkslksdlkdklskl"),
+     *       @OA\Property(property="name", type="string", format="name", example="example"),
      *    ),
      * ),
      * @OA\Response(
@@ -124,7 +123,6 @@ class AuthController extends Controller
         $rules = array(
             'email' => 'required|string|email|max:255|unique:users',
             'name' => 'required|string',
-            'api_token' => 'required|string'
         );
 
         $messages = array(
@@ -137,17 +135,17 @@ class AuthController extends Controller
             return $this->sendError(Messages::allFieldsError);
         }
 
-        $user = $this->getUserByToken($request['api_token']);
+        $user = User::where('email', $request['email'])->first();
 
         if (!$user) {
-            User::forceCreate([
+            $user = User::forceCreate([
                 'email' => $request['email'],
                 'name' => $request['name'],
-                'api_token' => $request['api_token'],
+                'api_token' => Str::random(80),
             ]);
         }
 
-        return $this->sendResponse($request['api_token'], 'api_token');
+        return $this->sendResponse($user['api_token'], 'api_token');
     }
 
     /**

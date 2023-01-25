@@ -173,7 +173,7 @@
                     "Auth"
                 ],
                 "summary": "loginOrRegisterViaSocialNetworks",
-                "description": "LoginOrRegisterViaSocialNetworks by email, name, api_token",
+                "description": "LoginOrRegisterViaSocialNetworks by email, name",
                 "operationId": "LoginOrRegisterViaSocialNetworks",
                 "requestBody": {
                     "description": "Pass user credentials",
@@ -183,8 +183,7 @@
                             "schema": {
                                 "required": [
                                     "email",
-                                    "name",
-                                    "api_token"
+                                    "name"
                                 ],
                                 "properties": {
                                     "email": {
@@ -194,13 +193,8 @@
                                     },
                                     "name": {
                                         "type": "string",
-                                        "format": "password",
+                                        "format": "name",
                                         "example": "example"
-                                    },
-                                    "api_token": {
-                                        "type": "string",
-                                        "format": "password",
-                                        "example": "1sllsdlsdklskldlkslksdlkdklskl"
                                     }
                                 },
                                 "type": "object"
