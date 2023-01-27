@@ -1822,6 +1822,9 @@
                                                     },
                                                     "image": {
                                                         "type": "string"
+                                                    },
+                                                    "childId": {
+                                                        "type": "string"
                                                     }
                                                 },
                                                 "type": "object"
@@ -2764,13 +2767,14 @@
                                             "type": "array",
                                             "items": {
                                                 "properties": {
-                                                    "tooth": {
-                                                        "type": "object",
-                                                        "example": {
-                                                            "toothId": "22",
-                                                            "childId": "55",
-                                                            "id": "49"
-                                                        }
+                                                    "toothId": {
+                                                        "type": "string"
+                                                    },
+                                                    "childId": {
+                                                        "type": "string"
+                                                    },
+                                                    "id": {
+                                                        "type": "string"
                                                     }
                                                 },
                                                 "type": "object"

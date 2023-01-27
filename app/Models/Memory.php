@@ -12,13 +12,12 @@ class Memory extends Model
     use HasFactory;
 
     protected $fillable = [
-        'id', 'date', 'name', 'note', 'color', 'image'
+        'id', 'date', 'name', 'note', 'color', 'image', 'childId'
     ];
 
     protected $hidden = [
         'updated_at',
         'created_at',
-        'childId',
         'api_token'
     ];
 

@@ -42,8 +42,10 @@ class ToothController extends \App\Http\Controllers\API\Controller
      *    @OA\JsonContent(
      *       @OA\Property(property="result", type="string", example="success"),
      *       @OA\Property(property="teeth", type="array",
-     *       @OA\Items(
-     *       @OA\Property(property="tooth", type="object", example= {"toothId" : "22", "childId" : "55", "id" : "49" })
+     *       @OA\Items(type="object",
+     *       @OA\Property(property="toothId", type="string"),
+     *       @OA\Property(property="childId", type="string"),
+     *       @OA\Property(property="id", type="string"),
      *     )
      *    )
      *   )

@@ -126,6 +126,7 @@ class MemoryController extends \App\Http\Controllers\API\Controller
      *       @OA\Property(property="note", type="string"),
      *       @OA\Property(property="color", type="string"),
      *       @OA\Property(property="image", type="string"),
+     *       @OA\Property(property="childId", type="string"),
      *       )
      *      )
      *     )
@@ -207,7 +208,8 @@ class MemoryController extends \App\Http\Controllers\API\Controller
             return $this->sendError(Messages::userError);
         }
 
-        Memory::where('id', $request['id'])->take(1)->delete();
+        Memory::where('id', $request['id'])->delete();
+
         return $this->sendSuccess(Messages::memoryDeleteSuccess);
     }
 
