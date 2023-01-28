@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 
 use App\Messages\Messages;
 use App\Models\Guide;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -53,12 +54,14 @@ class GuideController extends \App\Http\Controllers\API\Controller
      */
     public function get(Request $request): JsonResponse {
 
-        $category = $request['category'];
+        try {
+            $guides = Guide::where('category', $request['category'])->get();
 
-        $guides = Guide::where('category', $category)->get();
-
-        if (!$guides) {
-            return $this ->sendError(Messages::guidesError);
+            if (!$guides) {
+                return $this ->sendError(Messages::guidesError);
+            }
+        } catch (Exception $exception) {
+            return $this->sendFailure($request, $exception, method: "/getSubCategoryGuides");
         }
 
         return $this->sendResponse($guides, "guides");

@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 use App\Messages\Messages;
 use App\Models\Child;
 use App\Models\Memory;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
@@ -53,15 +54,23 @@ class ChildController extends \App\Http\Controllers\API\Controller
     public function get(Request $request): JsonResponse
     {
 
-        $api_token = substr($request->headers->get('Authorization', ''), 7);
+        $api_token = $this->getApiToken($request);
+        try {
+            $user = $this->getUserByToken($api_token);
 
-        $user = $this->getUserByToken($api_token);
+            if (!$user) {
+                return $this->sendError(Messages::userError);
+            }
 
-        if (!$user) {
-            return $this->sendError(Messages::userError);
+            $children = $this->getChildrenByToken($api_token);
+
+            if (!$children) {
+                return $this->sendError(Messages::childError);
+            }
+
+        } catch (Exception $exception) {
+            return $this->sendFailure($request, $exception, method: "/getChildren");
         }
-
-        $children = $this->getChildrenByToken($api_token);
 
         return $this->sendResponse($children, 'children');
     }
@@ -125,42 +134,34 @@ class ChildController extends \App\Http\Controllers\API\Controller
             return $this->sendError(Messages::userError);
         }
 
-        $childId = $request['id'];
-
-        $child = Child::where('id', $childId)->first();
+        $child = Child::where('id', $request['id'])->first();
 
         if (!$child) {
             return $this->sendError(Messages::childError);
         }
 
-        $childName = $child['name'];
-        $childGender = $child['gender'];
-        $childBirth = $child['birth'];
-        $childAvatar = $child['avatar'] ?: "childNull";
+        try {
+            if (!$this -> stringIsEmptyOrNull($request['name']) && $child['name'] != $request['name']) {
+                $child->name = $request['name'];
+                $child->save();
+            }
 
-        $requestName = $request['name'];
-        $requestGender = $request['gender'];
-        $requestBirth = $request['birth'];
-        $requestAvatar = $request['avatar'] ?: "requestNull";
+            if (!$this -> sendError($request['gender']) && $child['gender'] != $request['gender']) {
+                $child->gender = $request['gender'];
+                $child->save();
+            }
 
-        if ($childName != $requestName) {
-            $child->name = $requestName;
-            $child->save();
-        }
+            if (!$this -> stringIsEmptyOrNull($request['birth']) && $child['birth'] != $request['birth']) {
+                $child->birth = $request['birth'];
+                $child->save();
+            }
 
-        if ($childGender != $requestGender) {
-            $child->gender = $requestGender;
-            $child->save();
-        }
-
-        if ($childBirth != $requestBirth) {
-            $child->birth = $requestBirth;
-            $child->save();
-        }
-
-        if ($childAvatar != $requestAvatar) {
-            $child->avatar = $requestAvatar == "requestNull" ? null : $this->uploadImage($requestAvatar);
-            $child->save();
+            if (!$this -> stringIsEmptyOrNull($request['avatar']) && $child['avatar'] != $request['avatar']) {
+                $child->avatar = $this->uploadImage($request['avatar']);
+                $child->save();
+            }
+        } catch (Exception $exception) {
+            return $this->sendFailure($request, $exception, method: "/editChild");
         }
 
         return $this->sendSuccess(Messages::childEditedSuccess);
@@ -205,7 +206,6 @@ class ChildController extends \App\Http\Controllers\API\Controller
      */
     public function delete(Request $request): JsonResponse
     {
-        $api_token = substr($request->headers->get('Authorization', ''), 7);
 
         $validator = Validator::make($request->all(), [
             'id' => 'required|string'
@@ -215,21 +215,23 @@ class ChildController extends \App\Http\Controllers\API\Controller
             return $this->sendError(Messages::allFieldsError);
         }
 
-        $user = $this->getUserByToken($api_token);
+        $user = $this->getUserByToken($this->getApiToken($request));
 
         if (!$user) {
             return $this->sendError(Messages::userError);
         }
 
-        $childId = $request['id'];
-
-        $child = Child::where('id', $childId)->first();
+        $child = Child::where('id', $request['id'])->first();
 
         if (!$child) {
             return $this->sendError(Messages::childError);
         }
 
-        $child->take(1)->delete();
+        try {
+            $child->delete();
+        } catch (Exception $exception) {
+            return $this->sendFailure($request, $exception, method: "/deleteChild");
+        }
 
         return $this->sendSuccess(Messages::childDeleteSuccess);
     }
@@ -276,7 +278,7 @@ class ChildController extends \App\Http\Controllers\API\Controller
      */
     public function add(Request $request): JsonResponse
     {
-        $api_token = substr($request->headers->get('Authorization', ''), 7);
+        $api_token = $this->getApiToken($request);
 
         $validator = Validator::make($request->all(), [
             'name' => 'required|string',
@@ -294,21 +296,6 @@ class ChildController extends \App\Http\Controllers\API\Controller
             return $this->sendError(Messages::userError);
         }
 
-        $requestName = $request['name'];
-        $requestGender = $request['gender'];
-        $requestBirth = $request['birth'];
-
-        $requestAvatar = $request['avatar'] ?: "requestNull";
-        $requestAvatar = $requestAvatar == "requestNull" ? null : $this->uploadImage($requestAvatar);
-
-        $child = Child::forceCreate([
-            'name' => $requestName,
-            'gender' => $requestGender,
-            'birth' => $requestBirth,
-            'avatar' => $requestAvatar,
-            'api_token' => $api_token
-        ]);
-
         $memories = [
             "Sleep in my bedroom",
             "Hey! It’s my first step",
@@ -317,12 +304,32 @@ class ChildController extends \App\Http\Controllers\API\Controller
             "Play with my favourite toys"
         ];
 
-        foreach ($memories as $memory) {
-            Memory::forceCreate([
-                'name' => $memory,
-                'childId' => $child['id'],
+        try {
+
+            if (!$this->stringIsEmptyOrNull($request['avatar'])) {
+                $avatar = $this->uploadImage($request['avatar']);
+            } else {
+                $avatar = null;
+            }
+
+            $child = Child::forceCreate([
+                'name' => $request['name'],
+                'gender' => $request['gender'],
+                'birth' => $request['birth'],
+                'avatar' => $avatar,
                 'api_token' => $api_token
             ]);
+
+            foreach ($memories as $memory) {
+                Memory::forceCreate([
+                    'name' => $memory,
+                    'childId' => $child['id'],
+                    'api_token' => $api_token
+                ]);
+            }
+
+        } catch (Exception $exception) {
+            return $this->sendFailure($request, $exception, method: "/addChild");
         }
 
         return $this->sendSuccess(Messages::childAddedSuccess);

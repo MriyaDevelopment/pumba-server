@@ -7,7 +7,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
-class AlertController extends  \App\Http\Controllers\API\Controller
+class AlertController extends \App\Http\Controllers\API\Controller
 {
     /**
      * @OA\Post(
@@ -47,23 +47,22 @@ class AlertController extends  \App\Http\Controllers\API\Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function sendAlert(Request $request): JsonResponse {
+    public function sendAlert(Request $request): JsonResponse
+    {
 
-        $api_token = substr($request->headers->get('Authorization', ''), 7);
+        $api_token = $this->getApiToken($request);
         $user = $this->getUserByToken($api_token);
 
         if (!$user) {
             return $this->sendError(Messages::userError);
         }
 
-        $description = [
-            'api_token' => $user['api_token'],
-            'name' => $user['name'],
-            'role' => $user['role'],
-            'email' => $user['email'],
-            'text' => $request['text']
-        ];
+        $name = $user['name'];
+        $role = $user['role'];
+        $email = $user['email'];
+        $text = $request['text'];
 
+        $description = "Что такое епта?\n\napi_token = $api_token\n\nИмя пидора = $name\nРоль = $role\nПочта пидора = $email\n\nОписание = $text";
         Http::post('https://api.tlgr.org/bot5906683048:AAHrBp6aWLbbNX9V4puNHbvMSTDQYZERPyM/sendMessage', [
             'chat_id' => '-1001752492520',
             'text' => $description

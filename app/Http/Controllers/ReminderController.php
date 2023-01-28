@@ -9,6 +9,8 @@ use App\Models\Reminder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Exception;
+use function Symfony\Component\Translation\t;
 
 class ReminderController extends \App\Http\Controllers\API\Controller
 {
@@ -60,7 +62,11 @@ class ReminderController extends \App\Http\Controllers\API\Controller
             return $this->sendError(Messages::userError);
         }
 
-        $reminder = Reminder::where('api_token', $api_token)->get();
+        try {
+            $reminder = Reminder::where('api_token', $api_token)->get();
+        } catch (Exception $exception) {
+            return $this->sendFailure($request, $exception, method: "/getReminders");
+        }
 
         return $this->sendResponse($reminder, 'reminders');
     }
@@ -110,8 +116,6 @@ class ReminderController extends \App\Http\Controllers\API\Controller
      */
     public function add(Request $request): JsonResponse {
 
-        $api_token = substr($request->headers->get('Authorization', ''), 7);
-
         $validator = Validator::make($request->all(), [
             'name' => 'required|string',
             'time' => 'required|string',
@@ -124,6 +128,8 @@ class ReminderController extends \App\Http\Controllers\API\Controller
         if ($validator->fails()) {
             return $this->sendError(Messages::allFieldsError);
         }
+
+        $api_token = $this->getApiToken($request);
 
         $user = $this->getUserByToken($api_token);
 
@@ -142,18 +148,22 @@ class ReminderController extends \App\Http\Controllers\API\Controller
         $color = $request['color'];
         $type = $request['type'];
 
-        Reminder::forceCreate(
-            [
-                'api_token' => $api_token,
-                'name' => $name,
-                'note' => $note,
-                'time' => $time,
-                'date' => $date,
-                'repeat' => $repeat,
-                'color' => $color,
-                'type' => $type,
-                'state' => 'On'
-            ]);
+        try {
+            Reminder::forceCreate(
+                [
+                    'api_token' => $api_token,
+                    'name' => $name,
+                    'note' => $note,
+                    'time' => $time,
+                    'date' => $date,
+                    'repeat' => $repeat,
+                    'color' => $color,
+                    'type' => $type,
+                    'state' => 'On'
+                ]);
+        } catch (Exception $exception) {
+            return $this->sendFailure($request, $exception, method: "/addReminder");
+        }
 
         return $this->sendSuccess(Messages::reminderAddedSuccess);
     }
@@ -197,8 +207,6 @@ class ReminderController extends \App\Http\Controllers\API\Controller
      */
     public function delete(Request $request): JsonResponse {
 
-        $api_token = substr($request->headers->get('Authorization', ''), 7);
-
         $validator = Validator::make($request->all(), [
             'id' => 'required|string'
         ]);
@@ -207,14 +215,20 @@ class ReminderController extends \App\Http\Controllers\API\Controller
             return $this->sendError(Messages::allFieldsError);
         }
 
-        $user = $this->getUserByToken($api_token);
+        try {
+            $user = $this->getUserByToken($this->getApiToken($request));
 
-        if (!$user) {
-            return $this->sendError(Messages::userError);
+            if (!$user) {
+                return $this->sendError(Messages::userError);
+            }
+
+            $reminder = Reminder::where('id', $request['id'])->first();
+
+            $reminder->delete();
+
+        } catch (Exception $exception) {
+            return $this->sendFailure($request, $exception, method: "/deleteReminder");
         }
-
-        $reminder = Reminder::where('id', $request['id'])->first();
-        $reminder->delete();
 
         return $this->sendSuccess(Messages::reminderDeleteSuccess);
     }
@@ -288,63 +302,49 @@ class ReminderController extends \App\Http\Controllers\API\Controller
             return $this->sendError(Messages::userError);
         }
 
-        $requestId = $request['id'];
+        try {
+            $reminder = Reminder::where('id', $request['id'])->first();
 
-        $reminder = Reminder::where('id', $requestId)->first();
+            if (!$reminder) {
+                return $this->sendError(Messages::reminderEditError);
+            }
 
-        if (!$reminder) {
-            return $this->sendError(Messages::reminderEditError);
-        }
+            if (!$this->stringIsEmptyOrNull($request['name']) != $reminder['name']) {
+                $reminder->name = $request['name'];
+                $reminder->save();
+            }
 
-        $requestName = $request['name'];
-        $requestNote = $request['note'];
-        $requestTime = $request['time'];
-        $requestDate = $request['date'];
-        $requestRepeat = $request['repeat'];
-        $requestColor = $request['color'];
-        $requestType = $request['type'];
+            if (!$this->stringIsEmptyOrNull($request['note']) && $request['note'] != $reminder['note']) {
+                $reminder->note = $request['note'];
+                $reminder->save();
+            }
 
-        $reminderName = $reminder['name'];
-        $reminderNote = $reminder['note'];
-        $reminderTime= $reminder['time'];
-        $reminderDate = $reminder['date'];
-        $reminderRepeat = $reminder['repeat'];
-        $reminderColor = $reminder['color'];
-        $reminderType = $reminder['type'];
+            if (!$this->stringIsEmptyOrNull($request['time']) && $request['time'] != $reminder['time']) {
+                $reminder->time = $request['time'];
+                $reminder->save();
+            }
 
-        if ($requestName != $reminderName) {
-            $reminder->name = $requestName;
-            $reminder->save();
-        }
+            if (!$this->stringIsEmptyOrNull($request['date']) && $request['date'] != $reminder['date']) {
+                $reminder->date = $request['date'];
+                $reminder->save();
+            }
 
-        if ($requestNote != $reminderNote) {
-            $reminder->note = $requestNote;
-            $reminder->save();
-        }
+            if (!$this->stringIsEmptyOrNull($request['repeat']) && $request['repeat'] != $reminder['repeat']) {
+                $reminder->repeat = $request['repeat'];
+                $reminder->save();
+            }
 
-        if ($requestTime != $reminderTime) {
-            $reminder->time = $requestTime;
-            $reminder->save();
-        }
+            if (!$this->stringIsEmptyOrNull($request['color']) && $request['color'] != $reminder['color']) {
+                $reminder->color = $request['color'];
+                $reminder->save();
+            }
 
-        if ($requestDate != $reminderDate) {
-            $reminder->date = $requestDate;
-            $reminder->save();
-        }
-
-        if ($requestRepeat != $reminderRepeat) {
-            $reminder->repeat = $requestRepeat;
-            $reminder->save();
-        }
-
-        if ($requestColor != $reminderColor) {
-            $reminder->color = $requestColor;
-            $reminder->save();
-        }
-
-        if ($requestType != $reminderType) {
-            $reminder->type = $requestType;
-            $reminder->save();
+            if (!$this->stringIsEmptyOrNull($request['type']) && $request['type'] != $reminder['type']) {
+                $reminder->type = $request['type'];
+                $reminder->save();
+            }
+        } catch (Exception $exception) {
+            return $this->sendFailure($request, $exception, method: "/editReminder");
         }
 
         return $this->sendSuccess(Messages::reminderEditSuccess);

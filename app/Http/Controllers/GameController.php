@@ -7,6 +7,7 @@ use App\Models\Game;
 use App\Models\Guide;
 use App\Models\Inventory;
 use App\Models\SaveGame;
+use Exception;
 use Illuminate\Support\Str;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -68,7 +69,7 @@ class GameController extends \App\Http\Controllers\API\Controller
      */
     public function get(Request $request): JsonResponse
     {
-        $api_token = substr($request->headers->get('Authorization', ''), 7);
+        $api_token = $this->getApiToken($request);
 
         $user = $this->getUserByToken($api_token);
         if (!$user) {
@@ -81,29 +82,33 @@ class GameController extends \App\Http\Controllers\API\Controller
         $energy_level = $user['energy_level'];
         $stuff = $user['stuff'];
 
-        $games = Game::all();
-        $gamesList = [];
+        try {
+            $games = Game::all();
+            $gamesList = [];
 
-        foreach ($games as $game) {
-            $isAge = strpos($game['ages'], $ages);
-            $isTime = strpos($game['time'], $time);
-            $isDoor = strpos($game['door_type'], $door_type);
-            $isEnergyLevel = str_contains($game['energy_level'], $energy_level);
-            $isStuff = strpos($game['stuff'], $stuff);
+            foreach ($games as $game) {
+                $isAge = strpos($game['ages'], $ages);
+                $isTime = strpos($game['time'], $time);
+                $isDoor = strpos($game['door_type'], $door_type);
+                $isEnergyLevel = str_contains($game['energy_level'], $energy_level);
+                $isStuff = strpos($game['stuff'], $stuff);
 
-            if (($isAge !== false) && ($isTime !== false) && ($isDoor !== false) && $isEnergyLevel && ($isStuff !== false)) {
-                $inventory = Inventory::where('gameId', $game['id'])->get();
-                $savedGame = SaveGame::where('api_token', $api_token)->where('gameId', $game['id'])->first();
-                $isSaved = false;
-                if ($savedGame) {
-                    $isSaved = true;
+                if (($isAge !== false) && ($isTime !== false) && ($isDoor !== false) && $isEnergyLevel && ($isStuff !== false)) {
+                    $inventory = Inventory::where('gameId', $game['id'])->get();
+                    $savedGame = SaveGame::where('api_token', $api_token)->where('gameId', $game['id'])->first();
+                    $isSaved = false;
+                    if ($savedGame) {
+                        $isSaved = true;
+                    }
+                    $game['inventory'] = $inventory;
+                    $game['isSaved'] = $isSaved;
+                    $gamesList[] = [
+                        'game' => $game,
+                    ];
                 }
-                $game['inventory'] = $inventory;
-                $game['isSaved'] = $isSaved;
-                $gamesList[] = [
-                    'game' => $game,
-                ];
             }
+        } catch (Exception $exception) {
+            return $this->sendFailure($request, $exception, method: "/getGames");
         }
 
         return $this->sendResponse($gamesList, 'games');
@@ -165,7 +170,7 @@ class GameController extends \App\Http\Controllers\API\Controller
      */
     public function getById(Request $request): JsonResponse
     {
-        $api_token = substr($request->headers->get('Authorization', ''), 7);
+        $api_token = $this->getApiToken($request);
 
         $user = $this->getUserByToken($api_token);
         if (!$user) {
@@ -180,22 +185,26 @@ class GameController extends \App\Http\Controllers\API\Controller
             return $this->sendError(Messages::allFieldsError);
         }
 
-        $game = Game::where('id', $request['id'])->first();
+        try {
+            $game = Game::where('id', $request['id'])->first();
 
-        if (!$game) {
-            return $this->sendError(Messages::gameError);
+            if (!$game) {
+                return $this->sendError(Messages::gameError);
+            }
+            $inventory = Inventory::where('gameId', $game['id'])->get();
+            $savedGame = SaveGame::where('api_token', $api_token)->where('gameId', $game['id'])->first();
+
+            $isSaved = false;
+
+            if ($savedGame) {
+                $isSaved = true;
+            }
+
+            $game['inventory'] = $inventory;
+            $game['isSaved'] = $isSaved;
+        } catch (Exception $exception) {
+            return $this->sendFailure($request, $exception, method: "/getGameById");
         }
-        $inventory = Inventory::where('gameId', $game['id'])->get();
-        $savedGame = SaveGame::where('api_token', $api_token)->where('gameId', $game['id'])->first();
-
-        $isSaved = false;
-
-        if ($savedGame) {
-            $isSaved = true;
-        }
-
-        $game['inventory'] = $inventory;
-        $game['isSaved'] = $isSaved;
 
         return $this->sendResponse($game, 'game');
     }
@@ -239,7 +248,7 @@ class GameController extends \App\Http\Controllers\API\Controller
      */
     public function save(Request $request): JsonResponse
     {
-        $api_token = substr($request->headers->get('Authorization', ''), 7);
+        $api_token = $this->getApiToken($request);
 
         if (!$this->getUserByToken($api_token)) {
             return $this->sendError(Messages::profileError);
@@ -253,21 +262,26 @@ class GameController extends \App\Http\Controllers\API\Controller
             return $this->sendError(Messages::allFieldsError);
         }
 
-        $savedGame = SaveGame::where('api_token', $api_token)->where('gameId', $request['gameId'])->first();
-        $isSaved = false;
-        if ($savedGame) {
-            $savedGame->delete();
-        } else {
-            SaveGame::forceCreate([
-                'api_token' => $api_token,
-                'gameId' => $request['gameId'],
-            ]);
-            $isSaved = true;
+        try {
+            $savedGame = SaveGame::where('api_token', $api_token)->where('gameId', $request['gameId'])->first();
+            $isSaved = false;
+            if ($savedGame) {
+                $savedGame->delete();
+            } else {
+                SaveGame::forceCreate([
+                    'api_token' => $api_token,
+                    'gameId' => $request['gameId'],
+                ]);
+                $isSaved = true;
+            }
+            $saveInfo = [
+                'isSaved' => $isSaved,
+                'gameId' => $request['gameId']
+            ];
+        } catch (Exception $exception) {
+            return $this->sendFailure($request, $exception, method: "/saveGame");
         }
-        $saveInfo = [
-            'isSaved' => $isSaved,
-            'gameId' => $request['gameId']
-        ];
+
         return $this->sendResponse($saveInfo, 'saveInfo');
     }
 
@@ -324,29 +338,33 @@ class GameController extends \App\Http\Controllers\API\Controller
      */
     public function getSavedGames(Request $request): JsonResponse
     {
-        $api_token = substr($request->headers->get('Authorization', ''), 7);
+        $api_token = $this->getApiToken($request);
 
         if (!$this->getUserByToken($api_token)) {
             return $this->sendError(Messages::profileError);
         }
 
-        $games = Game::all();
-        $gamesList = [];
+        try {
+            $games = Game::all();
+            $gamesList = [];
 
-        foreach ($games as $game) {
-            $inventory = Inventory::where('gameId', $game['id'])->get();
-            $savedGame = SaveGame::where('api_token', $api_token)->where('gameId', $game['id'])->first();
-            $isSaved = false;
-            if ($savedGame) {
-                $isSaved = true;
+            foreach ($games as $game) {
+                $inventory = Inventory::where('gameId', $game['id'])->get();
+                $savedGame = SaveGame::where('api_token', $api_token)->where('gameId', $game['id'])->first();
+                $isSaved = false;
+                if ($savedGame) {
+                    $isSaved = true;
+                }
+                $game['inventory'] = $inventory;
+                $game['isSaved'] = $isSaved;
+                if ($isSaved) {
+                    $gamesList[] = [
+                        'game' => $game,
+                    ];
+                }
             }
-            $game['inventory'] = $inventory;
-            $game['isSaved'] = $isSaved;
-            if ($isSaved) {
-                $gamesList[] = [
-                    'game' => $game,
-                ];
-            }
+        } catch (Exception $exception) {
+            return $this->sendFailure($request, $exception, method: "/getSavedGames");
         }
 
         return $this->sendResponse($gamesList, 'games');

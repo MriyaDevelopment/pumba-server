@@ -425,11 +425,11 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "new_email",
+                                    "email",
                                     "old_email"
                                 ],
                                 "properties": {
-                                    "new_email": {
+                                    "email": {
                                         "type": "string",
                                         "format": "email",
                                         "example": "example@example.com"
@@ -1926,7 +1926,7 @@
                     "Memories"
                 ],
                 "summary": "editMemory",
-                "description": "editMemory by id, image, note, name, color",
+                "description": "Изменение идет по id самого memory, в данном случае api_token проверяет существование пользователя в данный момент, все поля кроме id могут являться опционально null или empty, если вы укажите просто id а другие поля оставите неизменными, empty, null то ничего не произайдет, если поменяется поле и оно будет не null, notEmpty и не равно значению поля в таблице то оно обновиться и перезапишется",
                 "operationId": "editMemory",
                 "requestBody": {
                     "description": "Pass user credentials",
@@ -1935,16 +1935,11 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "id",
-                                    "name",
-                                    "note",
-                                    "image",
-                                    "color"
+                                    "id"
                                 ],
                                 "properties": {
                                     "name": {
-                                        "type": "string",
-                                        "example": "Example"
+                                        "type": "string"
                                     },
                                     "note": {
                                         "type": "string"
@@ -1953,8 +1948,7 @@
                                         "type": "string"
                                     },
                                     "image": {
-                                        "type": "string",
-                                        "example": "Base64 or Null(удали поле опционально null/nil)"
+                                        "type": "string"
                                     },
                                     "id": {
                                         "type": "string"

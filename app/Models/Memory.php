@@ -21,5 +21,9 @@ class Memory extends Model
         'api_token'
     ];
 
+    protected $casts = [
+        'id' => 'string',
+    ];
+
     protected $table = 'memories';
 }

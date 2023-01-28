@@ -40,6 +40,7 @@ class Messages {
     const memoryAddedSuccess = "Memory added successfully";
     const memoryDeleteSuccess = "Memory delete successfully";
     const memoryEditedSuccess = "Memory edited successfully";
+    const memoryError = "Memories don't exist";
 
     //Mailer
     const mailSearchError = "Mail does not exist";
@@ -54,6 +55,9 @@ class Messages {
 
     //Alert
     const alertSendSuccess = "Bot sent a message";
+
+    //Database
+    const databaseErrorOccurred = "Database error occurred";
 }
 
 

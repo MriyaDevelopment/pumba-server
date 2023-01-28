@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Messages\Messages;
 use App\Models\Code;
 use App\Models\User;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -56,26 +57,31 @@ class MailerController extends \App\Http\Controllers\API\Controller
         if ($validator->fails()) {
             return $this->sendError(Messages::allFieldsError);
         }
-        $verification = Code::where('email', $request['email'])->first();
-        if ($verification) {
-            Code::where('email', $request['email'])
-                ->take(1)
-                ->delete();
+        try {
+            $verification = Code::where('email', $request['email'])->first();
+            if ($verification) {
+                Code::where('email', $request['email'])
+                    ->take(1)
+                    ->delete();
+            }
+            $code = rand(999, 9999);
+            $user = User::where('email', $input['email'])->first();
+            if (!$user) {
+                return $this->sendError(Messages:: mailSearchError);
+            }
+            $message = 'Dear ' . $user['your_name'] . ', this is your personal 4-digit confirmation code. Do not share this code with anyone. Confirmation code: ' . $code;
+            Mail::raw($message, function ($message) use ($input) {
+                $message->to($input['email'])->subject("Password recovery");
+                $message->from('mriyadev@gmail.com', 'Pumba');
+            });
+            Code::forceCreate([
+                'email' => $input['email'],
+                'code' => $code
+            ]);
+        } catch (Exception $exception) {
+            return $this->sendFailure($request, $exception, method: "/sendLetter");
         }
-        $code = rand(999, 9999);
-        $user = User::where('email', $input['email'])->first();
-        if (!$user) {
-            return $this->sendError(Messages:: mailSearchError);
-        }
-        $message = 'Dear ' . $user['your_name'] . ', this is your personal 4-digit confirmation code. Do not share this code with anyone. Confirmation code: ' . $code;
-        Mail::raw($message, function ($message) use ($input) {
-            $message->to($input['email'])->subject("Password recovery");
-            $message->from('mriyadev@gmail.com', 'Pumba');
-        });
-        Code::forceCreate([
-            'email' => $input['email'],
-            'code' => $code
-        ]);
+
         return $this->sendSuccess('Verification code sent to ' . $input['email']);
     }
 
@@ -121,15 +127,17 @@ class MailerController extends \App\Http\Controllers\API\Controller
         ]);
         if ($validator->fails()) {
             return $this->sendError(Messages::allFieldsError);
-        } else {
+        }
+        try {
             $verification = Code::where('code', $request['code'])->first();
             if (!$verification) {
                 return $this->sendError(Messages::codeError);
             }
-            Code::where('code', $request['code'])
-                ->take(1)
-                ->delete();
-            return $this->sendSuccess(Messages::codeSuccess);
+            Code::where('code', $request['code'])->delete();
+        } catch (Exception $exception) {
+            return $this->sendFailure($request, $exception, method: "/checkCode");
         }
+
+        return $this->sendSuccess(Messages::codeSuccess);
     }
 }

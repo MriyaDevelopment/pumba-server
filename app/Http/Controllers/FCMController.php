@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Messages\Messages;
 use App\Models\User;
+use Exception;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -54,8 +55,13 @@ class FCMController extends \App\Http\Controllers\API\Controller
         if (!$user) {
             return $this->sendError(Messages::userError);
         }
-        $user->fcm_token = $request['fcm_token'];
-        $user->save();
+        try {
+            $user->fcm_token = $request['fcm_token'];
+            $user->save();
+        } catch (Exception $exception) {
+            return $this->sendFailure($request, $exception, method: "/updateFcmToken");
+        }
+
         return $this->sendSuccess(Messages::fcmUpdatedSuccess);
     }
 
@@ -105,20 +111,25 @@ class FCMController extends \App\Http\Controllers\API\Controller
         if (!$user) {
             return $this->sendError(Messages::userError);
         }
-        self::send(
-            $user['fcm_token'],
-            [
+        try {
+            self::send(
+                $user['fcm_token'],
+                [
+                    'title' => $request['title'],
+                    'body' => $request['body'],
+                    'sound' => 'default'
+                ]
+            );
+            $result = [
+                'api_token' => $user['api_token'],
+                'fcm_token' => $user['fcm_token'],
                 'title' => $request['title'],
-                'body' => $request['body'],
-                'sound' => 'default'
-            ]
-        );
-        $result = [
-          'api_token' => $user['api_token'],
-          'fcm_token' => $user['fcm_token'],
-          'title' => $request['title'],
-          'body' => $request['body']
-        ];
+                'body' => $request['body']
+            ];
+        } catch (Exception $exception) {
+            return $this->sendFailure($request, $exception, method: "/sendTestFCMMessage");
+        }
+
         return $this->sendResponse($result, 'result');
     }
 

@@ -11,6 +11,7 @@ use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\API\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Exception;
 
 class ProfileController extends Controller
 {
@@ -45,12 +46,14 @@ class ProfileController extends Controller
      */
     public function get(Request $request): JsonResponse {
 
-        $api_token = substr($request->headers->get('Authorization', ''), 7);
+        try {
+            $profile = $this->getUserByToken($this->getApiToken($request));
 
-        $profile = $this->getUserByToken($api_token);
-
-        if (!$profile) {
-            return $this->sendError(Messages::profileError);
+            if (!$profile) {
+                return $this->sendError(Messages::profileError);
+            }
+        }catch (Exception $exception) {
+            return $this->sendFailure($request, $exception, method: "/editProfile");
         }
 
         return $this->sendResponse($profile, 'profile');
@@ -97,51 +100,29 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): JsonResponse {
 
-        $input = $request->all();
-
-        $api_token = substr($request->headers->get('Authorization', ''), 7);
-
-        $profile = $this->getUserByToken($api_token);
+        $profile = $this->getUserByToken($this->getApiToken($request));
 
         if (!$profile) {
             return $this->sendError(Messages::profileError);
         }
 
-        $profileName = $profile['name'];
-        $profileAvatar = $profile['avatar'] ?: "profileNull";
-        $profileRole = $profile['role'];
-
-        $requestName = $request['name'];
-        $requestAvatar = $request['avatar'] ?: "requestNull";
-        $requestRole = $request['role'];
-
-        if ($profileName != $requestName) {
-            $rules = array(
-                'name' => 'required|string|unique:users'
-            );
-
-            $messages = array(
-                'name.required|string|unique:users' => Messages::userRegisterNameValidator,
-            );
-
-            $validator = Validator::make($input, $rules, $messages);
-
-            if ($validator->fails()) {
-                return $this->sendError($validator->errors()->first());
+        try {
+            if (!$this->stringIsEmptyOrNull($request['name']) && $request['name'] != $profile['name']) {
+                $profile->name = $request['name'];
+                $profile->save();
             }
 
-            $profile->name = $requestName;
-            $profile->save();
-        }
+            if (!$this->stringIsEmptyOrNull($request['role']) && $request['role'] != $profile['role']) {
+                $profile->role = $request['role'];
+                $profile->save();
+            }
 
-        if ($profileRole != $requestRole) {
-            $profile->role = $requestRole;
-            $profile->save();
-        }
-
-        if ($profileAvatar != $requestAvatar) {
-            $profile->avatar = $requestAvatar == "requestNull" ? null : $this->uploadImage($requestAvatar);
-            $profile->save();
+            if (!$this->stringIsEmptyOrNull($request['avatar']) && $request['avatar'] != $profile['avatar']) {
+                $profile->avatar = $this->uploadImage($request['avatar']);
+                $profile->save();
+            }
+        } catch (Exception $exception) {
+            return $this->sendFailure($request, $exception, method: "/editProfile");
         }
 
         return $this->sendSuccess(Messages::profileEditedSuccess);
@@ -178,54 +159,58 @@ class ProfileController extends Controller
      */
     public function delete(Request $request): JsonResponse {
 
-        $api_token = substr($request->headers->get('Authorization', ''), 7);
+        $api_token = $this->getApiToken($request);
 
-        $profile = $this->getUserByToken($api_token);
+        try {
+            $profile = $this->getUserByToken($api_token);
 
-        if (!$profile) {
-            return $this->sendError(Messages::profileError);
-        }
-
-        $profile->delete();
-
-        $children = $this->getChildrenByToken($api_token);
-
-        if ($children) {
-            foreach ($children as $child) {
-                Child::where('id', $child['id'])->delete();
+            if (!$profile) {
+                return $this->sendError(Messages::profileError);
             }
-        }
 
-        $memories = Memory::where('api_token', $api_token)->get();
+            $profile->delete();
 
-        if ($memories) {
-            foreach ($memories as $memory) {
-                Memory::where('id', $memory['id'])->delete();
+            $children = $this->getChildrenByToken($api_token);
+
+            if ($children) {
+                foreach ($children as $child) {
+                    Child::where('id', $child['id'])->delete();
+                }
             }
-        }
 
-        $reminders = Reminder::where('api_token', $api_token)->get();
+            $memories = Memory::where('api_token', $api_token)->get();
 
-        if ($reminders) {
-            foreach ($reminders as $reminder) {
-                Reminder::where('id', $reminder['id'])->delete();
+            if ($memories) {
+                foreach ($memories as $memory) {
+                    Memory::where('id', $memory['id'])->delete();
+                }
             }
-        }
 
-        $memories = Memory::where('api_token', $api_token)->get();
+            $reminders = Reminder::where('api_token', $api_token)->get();
 
-        if ($memories) {
-            foreach ($memories as $memory) {
-                Memory::where('id', $memory['id'])->delete();
+            if ($reminders) {
+                foreach ($reminders as $reminder) {
+                    Reminder::where('id', $reminder['id'])->delete();
+                }
             }
-        }
 
-        $teeth = Tooth::where('api_token', $api_token)->get();
+            $memories = Memory::where('api_token', $api_token)->get();
 
-        if ($teeth) {
-            foreach ($teeth as $tooth) {
-                Memory::where('id', $tooth['id'])->delete();
+            if ($memories) {
+                foreach ($memories as $memory) {
+                    Memory::where('id', $memory['id'])->delete();
+                }
             }
+
+            $teeth = Tooth::where('api_token', $api_token)->get();
+
+            if ($teeth) {
+                foreach ($teeth as $tooth) {
+                    Memory::where('id', $tooth['id'])->delete();
+                }
+            }
+        } catch (Exception $exception) {
+            return $this->sendFailure($request, $exception, method: "/deleteProfile");
         }
 
         return $this->sendSuccess(Messages::profileDeleteSuccess);
@@ -273,9 +258,8 @@ class ProfileController extends Controller
      * @return JsonResponse
      */
     public function addFiltersByGames(Request $request): JsonResponse {
-        $api_token = substr($request->headers->get('Authorization', ''), 7);
 
-        $profile = $this->getUserByToken($api_token);
+        $profile = $this->getUserByToken($this->getApiToken($request));
 
         if (!$profile) {
             return $this->sendError(Messages::profileError);
@@ -293,12 +277,16 @@ class ProfileController extends Controller
             return $this->sendError(Messages::allFieldsError);
         }
 
-        $profile->ages = $request['ages'];
-        $profile->energy_level = $request['energy_level'];
-        $profile->door_type = $request['door_type'];
-        $profile->stuff = $request['stuff'];
-        $profile->time = $request['time'];
-        $profile->save();
+        try {
+            $profile->ages = $request['ages'];
+            $profile->energy_level = $request['energy_level'];
+            $profile->door_type = $request['door_type'];
+            $profile->stuff = $request['stuff'];
+            $profile->time = $request['time'];
+            $profile->save();
+        } catch (Exception $exception) {
+            return $this->sendFailure($request, $exception, method: "/setResultQuiz");
+        }
 
         return $this->sendSuccess(Messages::profileFiltersAddSuccess);
     }

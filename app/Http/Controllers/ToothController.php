@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Messages\Messages;
 use App\Models\Tooth;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -70,8 +71,11 @@ class ToothController extends \App\Http\Controllers\API\Controller
             return $this->sendError(Messages::allFieldsError);
         }
 
-        $tooth = Tooth::where('api_token', $api_token)->where('childId', $request['childId'])->get();
-
+        try {
+            $tooth = Tooth::where('api_token', $api_token)->where('childId', $request['childId'])->get();
+        } catch (Exception $exception) {
+            return $this->sendFailure($request, $exception, method: "/getDropedTeeth");
+        }
         return $this->sendResponse($tooth, 'tooth');
     }
 
@@ -133,28 +137,32 @@ class ToothController extends \App\Http\Controllers\API\Controller
             return $this->sendError(Messages::allFieldsError);
         }
 
-        $tooth = Tooth::where('api_token', $api_token)
-            ->where('childId', $request['childId'])
-            ->where('toothId', $request['toothId'])
-            ->first();
+        try {
+            $tooth = Tooth::where('api_token', $api_token)
+                ->where('childId', $request['childId'])
+                ->where('toothId', $request['toothId'])
+                ->first();
 
-        $isDroped = false;
+            $isDroped = false;
 
-        if ($tooth) {
-            $tooth->delete();
-        } else {
-            Tooth::forceCreate([
-                'childId' => $request['childId'],
+            if ($tooth) {
+                $tooth->delete();
+            } else {
+                Tooth::forceCreate([
+                    'childId' => $request['childId'],
+                    'toothId' => $request['toothId'],
+                    'api_token' => $api_token
+                ]);
+                $isDroped = true;
+            }
+
+            $toothInfo = [
                 'toothId' => $request['toothId'],
-                'api_token' => $api_token
-            ]);
-            $isDroped = true;
+                'isDroped' => $isDroped
+            ];
+        } catch (Exception $exception) {
+            return $this->sendFailure($request, $exception, method: "/setDropedTooth");
         }
-
-        $toothInfo = [
-            'toothId' => $request['toothId'],
-            'isDroped' => $isDroped
-        ];
 
         return $this->sendResponse($toothInfo, 'toothInfo');
     }

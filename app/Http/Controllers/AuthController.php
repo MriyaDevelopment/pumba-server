@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\API\Controller;
 use App\Messages\Messages;
 use App\Models\User;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -67,14 +68,18 @@ class AuthController extends Controller
         $email = $input['email'];
         $password = $input['password'];
 
-        $user = User::where('email', $email)->first();
+        try {
+            $user = User::where('email', $email)->first();
 
-        if (!$user) {
-            return $this->sendError(Messages::userError);
-        }
+            if (!$user) {
+                return $this->sendError(Messages::userError);
+            }
 
-        if (!Hash::check($password, $user->password)) {
-            return $this->sendError(Messages::userPasswordError);
+            if (!Hash::check($password, $user->password)) {
+                return $this->sendError(Messages::userPasswordError);
+            }
+        }catch (Exception $exception) {
+            return $this->sendFailure($request, $exception, method: "/login");
         }
 
         $api_token = $user['api_token'];
@@ -135,14 +140,18 @@ class AuthController extends Controller
             return $this->sendError(Messages::allFieldsError);
         }
 
-        $user = User::where('email', $request['email'])->first();
+        try {
+            $user = User::where('email', $request['email'])->first();
 
-        if (!$user) {
-            $user = User::forceCreate([
-                'email' => $request['email'],
-                'name' => $request['name'],
-                'api_token' => Str::random(80),
-            ]);
+            if (!$user) {
+                $user = User::forceCreate([
+                    'email' => $request['email'],
+                    'name' => $request['name'],
+                    'api_token' => Str::random(80),
+                ]);
+            }
+        }catch (Exception $exception) {
+            return $this->sendFailure($request, $exception, method: "/loginOrRegisterViaSocialNetworks");
         }
 
         return $this->sendResponse($user['api_token'], 'api_token');
@@ -185,7 +194,7 @@ class AuthController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function register(Request $request): JsonResponse {
+    public function reg(Request $request): JsonResponse {
 
         $input = $request->all();
 
@@ -210,12 +219,16 @@ class AuthController extends Controller
         $password = Hash::make($input['password']);
         $api_token = Str::random(80);
 
-        User::forceCreate([
-            'email' => $email,
-            'name' => $name,
-            'password' => $password,
-            'api_token' => $api_token,
-        ]);
+        try {
+            User::forceCreate([
+                'email' => $email,
+                'name' => $name,
+                'password' => $password,
+                'api_token' => $api_token,
+            ]);
+        }catch (Exception $exception) {
+            return $this->sendFailure($request, $exception, method: "/register");
+        }
 
         return $this->sendResponse($api_token, 'api_token');
     }
@@ -264,15 +277,18 @@ class AuthController extends Controller
         ]);
         if ($validator->fails()) {
             return $this->sendError(Messages::allFieldsError);
-        } else {
+        }
+        try {
             $user = User::where('email', $input['email'])->first();
             if (!$user) {
                 return $this->sendError(Messages::mailSearchError);
             }
             $user->password = Hash::make($input['password']);
             $user->save();
-            return $this->sendSuccess(Messages::userChangePasswordSuccess);
+        } catch (Exception $exception) {
+            return $this->sendFailure($request, $exception, method: "/changePassword");
         }
+        return $this->sendSuccess(Messages::userChangePasswordSuccess);
     }
 
     /**
@@ -286,8 +302,8 @@ class AuthController extends Controller
      *    required=true,
      *    description="Pass user credentials",
      *    @OA\JsonContent(
-     *       required={"new_email", "old_email"},
-     *       @OA\Property(property="new_email", type="string", format="email", example="example@example.com"),
+     *       required={"email", "old_email"},
+     *       @OA\Property(property="email", type="string", format="email", example="example@example.com"),
      *       @OA\Property(property="old_email", type="string", format="email", example="example123@example.com"),
      *    ),
      * ),
@@ -315,7 +331,7 @@ class AuthController extends Controller
         $input = $request->all();
 
         $rules = array(
-            'new_email' => 'required|string|email|max:255|unique:users',
+            'email' => 'required|string|email|max:255|unique:users',
             'old_email' => 'required|string'
         );
         $messages = array(
@@ -326,14 +342,19 @@ class AuthController extends Controller
 
         if ($validator->fails()) {
             return $this->sendError($validator->errors()->first());
-        } else {
-            $user = User::where('old_email', $input['old_email'])->first();
+        }
+
+        try {
+            $user = User::where('email', $input['old_email'])->first();
             if (!$user) {
                 return $this->sendError(Messages::mailSearchError);
             }
-            $user->email = $input['new_email'];
+            $user->email = $input['email'];
             $user->save();
-            return $this->sendSuccess(Messages::userChangeMailSuccess);
+        } catch (Exception $exception) {
+            return $this->sendFailure($request, $exception, method: "/changeEmail");
         }
+
+        return $this->sendSuccess(Messages::userChangeMailSuccess);
     }
 }

@@ -50,7 +50,7 @@ Route::get('storage/', function ($filename)
 
 //Auth
 Route::post('login', [AuthController::class, 'login']);
-Route::post('register', [AuthController::class, 'register']);
+Route::post('register', [AuthController::class, 'reg']);
 Route::post('changePassword', [AuthController::class, 'changePassword']);
 Route::post('changeEmail', [AuthController::class, 'changeEmail']);
 Route::post('loginOrRegisterViaSocialNetworks', [AuthController::class, 'loginOrRegisterViaSocialNetworks']);

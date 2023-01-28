@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 use App\Messages\Messages;
 use App\Models\Guide;
 use App\Models\Memory;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -53,9 +54,10 @@ class MemoryController extends \App\Http\Controllers\API\Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function add(Request $request): JsonResponse {
+    public function add(Request $request): JsonResponse
+    {
 
-        $api_token = substr($request->headers->get('Authorization', ''), 7);
+        $api_token = $this->getApiToken($request);
 
         $validator = Validator::make($request->all(), [
             'childId' => 'required|string',
@@ -73,17 +75,24 @@ class MemoryController extends \App\Http\Controllers\API\Controller
             return $this->sendError(Messages::userError);
         }
 
-        $requestImage = $request['image'] ?: "requestNull";
-        $requestImage = $requestImage == "requestNull" ? null : $this->uploadImage($requestImage);
+        $image = "";
+        if (!$this->stringIsEmptyOrNull($request['image'])) {
+            $image = $this->uploadImage($request['image']);
+        }
 
-        Memory::forceCreate([
-            'childId' => $request['childId'],
-            'api_token' => $api_token,
-            'name' => $request['name'],
-            'note' => $request['note'],
-            'color' => $request['color'],
-            'image' => $requestImage
-        ]);
+        try {
+            Memory::forceCreate([
+                'childId' => $request['childId'],
+                'api_token' => $api_token,
+                'name' => $request['name'],
+                'note' => $request['note'],
+                'color' => $request['color'],
+                'image' => $image
+            ]);
+
+        } catch (Exception $exception) {
+            return $this->sendFailure($request, $exception, method: "/addMemory");
+        }
 
         return $this->sendSuccess(Messages::memoryAddedSuccess);
     }
@@ -135,8 +144,9 @@ class MemoryController extends \App\Http\Controllers\API\Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function get(Request $request): JsonResponse {
-        $api_token = substr($request->headers->get('Authorization', ''), 7);
+    public function get(Request $request): JsonResponse
+    {
+        $api_token = $this->getApiToken($request);
 
         $validator = Validator::make($request->all(), [
             'childId' => 'required|string',
@@ -150,7 +160,12 @@ class MemoryController extends \App\Http\Controllers\API\Controller
             return $this->sendError(Messages::userError);
         }
 
-        $memories = Memory::where('childId', $request['childId'])->get();
+        try {
+            $memories = Memory::where('childId', $request['childId'])->get();
+
+        } catch (Exception $exception) {
+            return $this->sendFailure($request, $exception, method: "/getMemories");
+        }
 
         return $this->sendResponse($memories, 'memories');
     }
@@ -192,9 +207,9 @@ class MemoryController extends \App\Http\Controllers\API\Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function delete(Request $request): JsonResponse {
-
-        $api_token = substr($request->headers->get('Authorization', ''), 7);
+    public function delete(Request $request): JsonResponse
+    {
+        $api_token = $this->getApiToken($request);
 
         $validator = Validator::make($request->all(), [
             'id' => 'required|string',
@@ -208,7 +223,12 @@ class MemoryController extends \App\Http\Controllers\API\Controller
             return $this->sendError(Messages::userError);
         }
 
-        Memory::where('id', $request['id'])->delete();
+        try {
+            Memory::where('id', $request['id'])->delete();
+
+        } catch (Exception $exception) {
+            return $this->sendFailure($request, $exception, method: "/deleteMemory");
+        }
 
         return $this->sendSuccess(Messages::memoryDeleteSuccess);
     }
@@ -217,7 +237,7 @@ class MemoryController extends \App\Http\Controllers\API\Controller
      * @OA\Post(
      * path="/editMemory",
      * summary="editMemory",
-     * description="editMemory by id, image, note, name, color",
+     * description="Изменение идет по id самого memory, в данном случае api_token проверяет существование пользователя в данный момент, все поля кроме id могут являться опционально null или empty, если вы укажите просто id а другие поля оставите неизменными, empty, null то ничего не произайдет, если поменяется поле и оно будет не null, notEmpty и не равно значению поля в таблице то оно обновиться и перезапишется",
      * operationId="editMemory",
      * security={
      * {"Authorization": {}}},
@@ -226,11 +246,11 @@ class MemoryController extends \App\Http\Controllers\API\Controller
      *    required=true,
      *    description="Pass user credentials",
      *    @OA\JsonContent(
-     *       required={"id", "name", "note", "image", "color"},
-     *       @OA\Property(property="name", type="string", example="Example"),
+     *       required={"id"},
+     *       @OA\Property(property="name", type="string"),
      *       @OA\Property(property="note", type="string"),
      *       @OA\Property(property="color", type="string"),
-     *       @OA\Property(property="image", type="string", example="Base64 or Null(удали поле опционально null/nil)"),
+     *       @OA\Property(property="image", type="string"),
      *       @OA\Property(property="id", type="string"),
      *    ),
      * ),
@@ -254,16 +274,13 @@ class MemoryController extends \App\Http\Controllers\API\Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function edit(Request $request): JsonResponse {
+    public function edit(Request $request): JsonResponse
+    {
 
-        $api_token = substr($request->headers->get('Authorization', ''), 7);
+        $api_token = $this->getApiToken($request);
 
         $validator = Validator::make($request->all(), [
             'id' => 'required|string',
-            'image' => 'required|string',
-            'name' => 'required|string',
-            'note' => 'required|string',
-            'color' => 'required|string'
         ]);
 
         if ($validator->fails()) {
@@ -274,28 +291,35 @@ class MemoryController extends \App\Http\Controllers\API\Controller
             return $this->sendError(Messages::userError);
         }
 
-        $memory = Memory::where('id', $request['id'])->firts();
+        try {
+            $memory = Memory::where('id', $request['id'])->first();
 
-        $requestImage = $request['image'] ?: "requestNull";
+            if (!$memory) {
+                return $this->sendError(Messages::memoryError);
+            }
 
-        if ($request['name'] != $memory['name']) {
-            $memory ->name = $request['name'];
-            $memory->save();
-        }
+            if (!$this->stringIsEmptyOrNull($request['name']) && $request['name'] != $memory['name']) {
+                $memory->name = $request['name'];
+                $memory->save();
+            }
 
-        if ($request['note'] != $memory['note']) {
-            $memory ->note = $request['note'];
-            $memory->save();
-        }
+            if (!$this->stringIsEmptyOrNull($request['note']) && $request['note'] != $memory['note']) {
+                $memory->note = $request['note'];
+                $memory->save();
+            }
 
-        if ($request['color'] != $memory['color']) {
-            $memory->color = $request['color'];
-            $memory->save();
-        }
+            if (!$this->stringIsEmptyOrNull($request['color']) && $request['color'] != $memory['color']) {
+                $memory->color = $request['color'];
+                $memory->save();
+            }
 
-        if ($request['image'] != $memory['image']) {
-            $memory->image = $requestImage == "requestNull" ? null : $this->uploadImage($requestImage);
-            $memory->save();
+            if (!$this->stringIsEmptyOrNull($request['image']) && $request['image'] != $memory['image']) {
+                $memory->image = $this->uploadImage($request['image']);
+                $memory->save();
+            }
+
+        } catch (Exception $exception) {
+            return $this->sendFailure($request, $exception, method: "/editMemory");
         }
 
         return $this->sendSuccess(Messages::memoryEditedSuccess);

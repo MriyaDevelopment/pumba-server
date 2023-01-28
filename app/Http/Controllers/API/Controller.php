@@ -2,11 +2,12 @@
 
 
 namespace App\Http\Controllers\API;
-
-
+use App\Http\Controllers\API\SwaggerAnnotations\MemorySwaggerAnnotation;
+use Illuminate\Http\Request;
 use App\Models\Child;
 use App\Models\User;
 use Illuminate\Support\Facades\Storage;
+use Mockery\Exception\InvalidOrderException;
 
 /**
  * @OA\Info(
@@ -26,8 +27,11 @@ use Illuminate\Support\Facades\Storage;
  *    bearerFormat="JWT",
  * ),
  */
+
+
 class Controller extends \App\Http\Controllers\Controller
 {
+
     public function getUserByToken(String $api_token) {
         return User::where('api_token', $api_token)->first();
     }
@@ -42,5 +46,20 @@ class Controller extends \App\Http\Controllers\Controller
         $name = time() . '.png';
         Storage::disk('local')->put($name, base64_decode($image));
         return $name;
+    }
+
+    public function stringIsEmptyOrNull($string) {
+        return $string === '' || $string === null;
+    }
+
+    public function getApiToken(Request $request): String {
+        return substr($request->headers->get('Authorization', ''), 7);
+    }
+
+    public function register()
+    {
+        $this->reportable(function (InvalidOrderException $e) {
+            $this->sendFailure(failure: $e);
+        });
     }
 }
