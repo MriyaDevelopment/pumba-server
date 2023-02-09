@@ -47,6 +47,7 @@ class GameController extends \App\Http\Controllers\API\Controller
      *       @OA\Property(property="type", type="string"),
      *       @OA\Property(property="time", type="string"),
      *       @OA\Property(property="image", type="string"),
+     *       @OA\Property(property="time_display", type="string"),
      *       @OA\Property(property="description", type="string"),
      *       @OA\Property(property="inventory", type="array",
      *       @OA\Items(type="object",

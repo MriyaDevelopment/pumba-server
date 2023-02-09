@@ -56,6 +56,7 @@ class Controller extends BaseController
             'text' => $description
         ]);
 
+        report($failure);
         return response()->json($failure, $code);
     }
 
