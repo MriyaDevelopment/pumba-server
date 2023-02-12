@@ -2377,7 +2377,13 @@
                                                     },
                                                     "date": {
                                                         "type": "string",
-                                                        "example": "Enum(Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday) -> String or format(yyyy-MM-dd) -> String"
+                                                        "example": "dd/mm/YYYY"
+                                                    },
+                                                    "enums": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "string"
+                                                        }
                                                     },
                                                     "repeat": {
                                                         "type": "boolean",
@@ -2617,19 +2623,12 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "id",
-                                    "name",
-                                    "note",
-                                    "time",
-                                    "date",
-                                    "repeat",
-                                    "color",
-                                    "type"
+                                    "id"
                                 ],
                                 "properties": {
                                     "id": {
                                         "type": "string",
-                                        "example": 0
+                                        "example": "0"
                                     },
                                     "name": {
                                         "type": "string",
@@ -2644,7 +2643,13 @@
                                     },
                                     "date": {
                                         "type": "string",
-                                        "example": "Enum(Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday) -> String or format(yyyy-MM-dd) -> String"
+                                        "example": "05/01/2023"
+                                    },
+                                    "enums": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        }
                                     },
                                     "repeat": {
                                         "type": "boolean",

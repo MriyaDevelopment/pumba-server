@@ -23,6 +23,7 @@ class Reminder extends Model
 
     protected $casts = [
         'repeat' => 'boolean',
+        'id' => 'string',
     ];
 
     protected $table = 'reminders';

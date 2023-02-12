@@ -6,10 +6,13 @@ namespace App\Http\Controllers;
 
 use App\Messages\Messages;
 use App\Models\Reminder;
+use Carbon\Carbon;
+use DateTime;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Exception;
+use InvalidArgumentException;
 use function Symfony\Component\Translation\t;
 
 class ReminderController extends \App\Http\Controllers\API\Controller
@@ -41,7 +44,8 @@ class ReminderController extends \App\Http\Controllers\API\Controller
      *       @OA\Property(property="id", type="string", example=0),
      *       @OA\Property(property="name", type="string"),
      *       @OA\Property(property="time", type="string", example="HH:mm"),
-     *       @OA\Property(property="date", type="string", example="Enum(Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday) -> String or format(yyyy-MM-dd) -> String"),
+     *       @OA\Property(property="date", type="string", example="dd/mm/YYYY"),
+     *       @OA\Property(property="enums", type="array", @OA\Items(type="string")),
      *       @OA\Property(property="repeat", type="boolean", example="false"),
      *       @OA\Property(property="color", type="string", example="Enum(Orange, Blue, LightBlue, Green, Purple, Yellow, Pink) -> String"),
      *       @OA\Property(property="type", type="string", example="Enum(Custom, Template) ->String"),
@@ -64,12 +68,37 @@ class ReminderController extends \App\Http\Controllers\API\Controller
         }
 
         try {
-            $reminder = Reminder::where('api_token', $api_token)->get();
+            $reminders = Reminder::where('api_token', $api_token)->get();
+            $remindersList = [];
+            foreach ($reminders as $reminder) {
+                $enums = [];
+
+                if (DateTime::createFromFormat('d/m/Y', $reminder['date']) !== false) {
+                    $date = $reminder['date'];
+                } else {
+                    $date = null;
+                    $enums = explode(',', $reminder['date']);
+                }
+
+                $remindersList[] = [
+                    'id' => $reminder['id'],
+                    'name' => $reminder['name'],
+                    'note' => $reminder['note'],
+                    'time' => $reminder['time'],
+                    'date' => $date,
+                    'enums' => $enums,
+                    'repeat' => $reminder['repeat'],
+                    'color' => $reminder['color'],
+                    'type' => $reminder['type'],
+                    'state' => $reminder['state']
+                ];
+            }
+
         } catch (Exception $exception) {
             return $this->sendFailure($request, $exception, method: "/getReminders");
         }
 
-        return $this->sendResponse($reminder, 'reminders');
+        return $this->sendResponse($remindersList, 'reminders');
     }
 
     /**
@@ -137,6 +166,10 @@ class ReminderController extends \App\Http\Controllers\API\Controller
 
         if (!$user) {
             return $this->sendError(Messages::userError);
+        }
+
+        if (is_null($request['date']) && is_null($request["enums"])) {
+            return $this->sendError(Messages::allFieldsError);
         }
 
         if (!$request['date']) {
@@ -255,12 +288,13 @@ class ReminderController extends \App\Http\Controllers\API\Controller
      *    required=true,
      *    description="Pass user credentials",
      *    @OA\JsonContent(
-     *       required={"id", "name", "note", "time", "date", "repeat", "color", "type"},
-     *       @OA\Property(property="id", type="string", example=0),
+     *       required={"id"},
+     *       @OA\Property(property="id", type="string", example="0"),
      *       @OA\Property(property="name", type="string", example="Example"),
      *       @OA\Property(property="note", type="string"),
      *       @OA\Property(property="time", type="string", example="HH:mm"),
-     *       @OA\Property(property="date", type="string", example="Enum(Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday) -> String or format(yyyy-MM-dd) -> String"),
+     *       @OA\Property(property="date", type="string", example="05/01/2023"),
+     *       @OA\Property(property="enums", type="array", @OA\Items(type="string")),
      *       @OA\Property(property="repeat", type="boolean", example="true"),
      *       @OA\Property(property="color", type="string", example="Enum(Orange, Blue, LightBlue, Green, Purple, Yellow, Pink) -> String"),
      *       @OA\Property(property="type", type="string", example="Enum(Custom, Template) ->String"),
@@ -289,27 +323,20 @@ class ReminderController extends \App\Http\Controllers\API\Controller
     public function edit(Request $request): JsonResponse
     {
 
-        $validator = Validator::make($request->all(), [
-            'id' => 'required|string',
-            'name' => 'required|string',
-            'note' => 'required|string',
-            'time' => 'required|string',
-            'date' => 'required|string',
-            'repeat' => 'required|boolean',
-            'color' => 'required|string',
-            'type' => 'required|string',
-        ]);
-
-        if ($validator->fails()) {
-            return $this->sendError(Messages::allFieldsError);
-        }
-
         $api_token = substr($request->headers->get('Authorization', ''), 7);
 
         $user = $this->getUserByToken($api_token);
 
         if (!$user) {
             return $this->sendError(Messages::userError);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendError(Messages::allFieldsError);
         }
 
         try {
@@ -334,9 +361,19 @@ class ReminderController extends \App\Http\Controllers\API\Controller
                 $reminder->save();
             }
 
-            if (!$this->stringIsEmptyOrNull($request['date']) && $request['date'] != $reminder['date']) {
-                $reminder->date = $request['date'];
-                $reminder->save();
+            if (!is_null($request['date']) || !is_null($request['enums'])) {
+
+                if (!is_null($request['date']) && $request['date'] != $reminder['date']) {
+                    $period = $request['date'];
+                    $reminder->date = $period;
+                    $reminder->save();
+                } elseif (!is_null($request['enums'])) {
+                    $datePeriod = implode(",", $request['enums']);
+                    if ($datePeriod != $reminder['date']) {
+                        $reminder->date = $datePeriod;
+                        $reminder->save();
+                    }
+                }
             }
 
             if (!$this->stringIsEmptyOrNull($request['repeat']) && $request['repeat'] != $reminder['repeat']) {
