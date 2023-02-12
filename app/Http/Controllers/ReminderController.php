@@ -54,7 +54,8 @@ class ReminderController extends \App\Http\Controllers\API\Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function get(Request $request): JsonResponse {
+    public function get(Request $request): JsonResponse
+    {
 
         $api_token = substr($request->headers->get('Authorization', ''), 7);
 
@@ -88,7 +89,8 @@ class ReminderController extends \App\Http\Controllers\API\Controller
      *       @OA\Property(property="name", type="string", example="Example"),
      *       @OA\Property(property="note", type="string"),
      *       @OA\Property(property="time", type="string", example="HH:mm"),
-     *       @OA\Property(property="date", type="string", example="Enum(Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday) -> String or format(yyyy-MM-dd) -> String"),
+     *       @OA\Property(property="date", type="string", example="05/01/2023"),
+     *       @OA\Property(property="enums", type="array", @OA\Items(type="string")),
      *       @OA\Property(property="repeat", type="string", example="1 == true or 0 == false -> Отправляем строкой!"),
      *       @OA\Property(property="color", type="string", example="Enum(Orange, Blue, LightBlue, Green, Purple, Yellow, Pink, NotColor) -> String"),
      *       @OA\Property(property="type", type="string", example="Enum(Custom, Template) ->String"),
@@ -114,12 +116,12 @@ class ReminderController extends \App\Http\Controllers\API\Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function add(Request $request): JsonResponse {
+    public function add(Request $request): JsonResponse
+    {
 
         $validator = Validator::make($request->all(), [
             'name' => 'required|string',
             'time' => 'required|string',
-            'date' => 'required|string',
             'repeat' => 'required|string',
             'color' => 'required|string',
             'type' => 'required|string',
@@ -137,10 +139,16 @@ class ReminderController extends \App\Http\Controllers\API\Controller
             return $this->sendError(Messages::userError);
         }
 
+        if (!$request['date']) {
+            $period = implode(",", $request['enums']);
+        } else {
+            $period = $request['date'];
+        }
+
         $name = $request['name'];
         $note = $request['note'];
         $time = $request['time'];
-        $date = $request['date'];
+
         $repeat = false;
         if ($request['repeat'] == "1") {
             $repeat = true;
@@ -155,7 +163,7 @@ class ReminderController extends \App\Http\Controllers\API\Controller
                     'name' => $name,
                     'note' => $note,
                     'time' => $time,
-                    'date' => $date,
+                    'date' => $period,
                     'repeat' => $repeat,
                     'color' => $color,
                     'type' => $type,
@@ -205,7 +213,8 @@ class ReminderController extends \App\Http\Controllers\API\Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function delete(Request $request): JsonResponse {
+    public function delete(Request $request): JsonResponse
+    {
 
         $validator = Validator::make($request->all(), [
             'id' => 'required|string'
@@ -277,7 +286,8 @@ class ReminderController extends \App\Http\Controllers\API\Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function edit(Request $request): JsonResponse {
+    public function edit(Request $request): JsonResponse
+    {
 
         $validator = Validator::make($request->all(), [
             'id' => 'required|string',

@@ -30,6 +30,7 @@ class MemoryController extends \App\Http\Controllers\API\Controller
      *       @OA\Property(property="name", type="string", example="Example"),
      *       @OA\Property(property="note", type="string"),
      *       @OA\Property(property="color", type="string"),
+     *       @OA\Property(property="date", type="string"),
      *       @OA\Property(property="image", type="string", example="Base64 or Null(удали поле опционально null/nil)"),
      *       @OA\Property(property="childId", type="string"),
      *    ),
@@ -64,7 +65,8 @@ class MemoryController extends \App\Http\Controllers\API\Controller
             'image' => 'required|string',
             'name' => 'required|string',
             'note' => 'required|string',
-            'color' => 'required|string'
+            'color' => 'required|string',
+            'date' => 'required|string'
         ]);
 
         if ($validator->fails()) {
@@ -87,6 +89,7 @@ class MemoryController extends \App\Http\Controllers\API\Controller
                 'name' => $request['name'],
                 'note' => $request['note'],
                 'color' => $request['color'],
+                'date' => $request['date'],
                 'image' => $image
             ]);
 
@@ -251,6 +254,7 @@ class MemoryController extends \App\Http\Controllers\API\Controller
      *       @OA\Property(property="note", type="string"),
      *       @OA\Property(property="color", type="string"),
      *       @OA\Property(property="image", type="string"),
+     *       @OA\Property(property="date", type="string"),
      *       @OA\Property(property="id", type="string"),
      *    ),
      * ),
@@ -300,6 +304,11 @@ class MemoryController extends \App\Http\Controllers\API\Controller
 
             if (!$this->stringIsEmptyOrNull($request['name']) && $request['name'] != $memory['name']) {
                 $memory->name = $request['name'];
+                $memory->save();
+            }
+
+            if (!$this->stringIsEmptyOrNull($request['date']) && $request['date'] != $memory['date']) {
+                $memory->name = $request['date'];
                 $memory->save();
             }
 

@@ -1683,6 +1683,9 @@
                                     "color": {
                                         "type": "string"
                                     },
+                                    "date": {
+                                        "type": "string"
+                                    },
                                     "image": {
                                         "type": "string",
                                         "example": "Base64 or Null(удали поле опционально null/nil)"
@@ -1951,6 +1954,9 @@
                                         "type": "string"
                                     },
                                     "image": {
+                                        "type": "string"
+                                    },
+                                    "date": {
                                         "type": "string"
                                     },
                                     "id": {
@@ -2444,7 +2450,13 @@
                                     },
                                     "date": {
                                         "type": "string",
-                                        "example": "Enum(Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday) -> String or format(yyyy-MM-dd) -> String"
+                                        "example": "05/01/2023"
+                                    },
+                                    "enums": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        }
                                     },
                                     "repeat": {
                                         "type": "string",
