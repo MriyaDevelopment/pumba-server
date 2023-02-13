@@ -2459,10 +2459,8 @@
                                         "example": "05/01/2023"
                                     },
                                     "enums": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "string"
-                                        }
+                                        "type": "string",
+                                        "example": "Monday,Thusday"
                                     },
                                     "repeat": {
                                         "type": "string",
@@ -2646,10 +2644,8 @@
                                         "example": "05/01/2023"
                                     },
                                     "enums": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "string"
-                                        }
+                                        "type": "string",
+                                        "example": "Monday,Thusday"
                                     },
                                     "repeat": {
                                         "type": "boolean",
