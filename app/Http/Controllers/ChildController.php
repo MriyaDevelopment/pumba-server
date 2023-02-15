@@ -109,7 +109,13 @@ class ChildController extends \App\Http\Controllers\API\Controller
      *    description="Success",
      *    @OA\JsonContent(
      *       @OA\Property(property="result", type="string", example="success"),
-     *       @OA\Property(property="success", type="string", example="Child edited successfully")
+     *       @OA\Property(property="child", type="object",
+     *       @OA\Property(property="id", type="string"),
+     *       @OA\Property(property="name", type="string"),
+     *       @OA\Property(property="avatar", type="string"),
+     *       @OA\Property(property="birth", type="string"),
+     *       @OA\Property(property="gender", type="string"),
+     *      )
      *     )
      *   )
      * )
@@ -160,11 +166,12 @@ class ChildController extends \App\Http\Controllers\API\Controller
                 $child->avatar = $this->uploadImage($request['avatar']);
                 $child->save();
             }
+            $childEdit = Child::where('id', $request['id'])->first();
+
+            return $this->sendResponse($childEdit, "child");
         } catch (Exception $exception) {
             return $this->sendFailure($request, $exception, method: "/editChild");
         }
-
-        return $this->sendSuccess(Messages::childEditedSuccess);
     }
 
     /**

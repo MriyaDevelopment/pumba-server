@@ -308,7 +308,7 @@ class MemoryController extends \App\Http\Controllers\API\Controller
             }
 
             if (!$this->stringIsEmptyOrNull($request['date']) && $request['date'] != $memory['date']) {
-                $memory->name = $request['date'];
+                $memory->date = $request['date'];
                 $memory->save();
             }
 

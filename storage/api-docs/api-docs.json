@@ -650,9 +650,25 @@
                                             "type": "string",
                                             "example": "success"
                                         },
-                                        "success": {
-                                            "type": "string",
-                                            "example": "Child edited successfully"
+                                        "child": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string"
+                                                },
+                                                "name": {
+                                                    "type": "string"
+                                                },
+                                                "avatar": {
+                                                    "type": "string"
+                                                },
+                                                "birth": {
+                                                    "type": "string"
+                                                },
+                                                "gender": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"

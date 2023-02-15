@@ -344,12 +344,12 @@ class ReminderController extends \App\Http\Controllers\API\Controller
             }
 
             if (!$this->stringIsEmptyOrNull($request['enums']) && $request['enums'] != $reminder['date']) {
-                $reminder->repeat = $request['enums'];
+                $reminder->date = $request['enums'];
                 $reminder->save();
             }
 
             if (!$this->stringIsEmptyOrNull($request['date']) && $request['date'] != $reminder['date']) {
-                $reminder->repeat = $request['date'];
+                $reminder->date = $request['date'];
                 $reminder->save();
             }
 
