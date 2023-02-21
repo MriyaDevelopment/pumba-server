@@ -75,6 +75,7 @@ Route::post('getReminders', [ReminderController::class, 'get']);
 Route::post('addReminder', [ReminderController::class, 'add']);
 Route::post('deleteReminder', [ReminderController::class, 'delete']);
 Route::post('editReminder', [ReminderController::class, 'edit']);
+Route::post('stateChanged', [ReminderController::class, 'stateChanged']);
 
 //Memories
 Route::post('getMemories', [MemoryController::class, 'get']);

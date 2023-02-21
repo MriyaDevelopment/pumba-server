@@ -2730,6 +2730,83 @@
                 ]
             }
         },
+        "/stateChanged": {
+            "post": {
+                "tags": [
+                    "Reminder"
+                ],
+                "summary": "stateChanged",
+                "description": "stateChanged by id, api_token",
+                "operationId": "stateChanged",
+                "requestBody": {
+                    "description": "Pass user credentials",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "id"
+                                ],
+                                "properties": {
+                                    "id": {
+                                        "type": "string",
+                                        "example": "0"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "401": {
+                        "description": "Wrong credentials response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "User does not exist"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "result": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "success": {
+                                            "type": "string",
+                                            "example": "Reminder edited successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "Authorization": []
+                    }
+                ]
+            }
+        },
         "/getDropedTeeth": {
             "post": {
                 "tags": [

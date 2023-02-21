@@ -328,7 +328,7 @@ class ReminderController extends \App\Http\Controllers\API\Controller
                 return $this->sendError(Messages::reminderEditError);
             }
 
-            if (!$this->stringIsEmptyOrNull($request['name']) != $reminder['name']) {
+            if (!$this->stringIsEmptyOrNull($request['name']) && $request['name'] != $reminder['name']) {
                 $reminder->name = $request['name'];
                 $reminder->save();
             }
@@ -372,5 +372,73 @@ class ReminderController extends \App\Http\Controllers\API\Controller
         }
 
         return $this->sendSuccess(Messages::reminderEditSuccess);
+    }
+
+    /**
+     * @OA\Post(
+     * path="/stateChanged",
+     * summary="stateChanged",
+     * description="stateChanged by id, api_token",
+     * operationId="stateChanged",
+     * security={
+     * {"Authorization": {}}},
+     * tags={"Reminder"},
+     * @OA\RequestBody(
+     *    required=true,
+     *    description="Pass user credentials",
+     *    @OA\JsonContent(
+     *       required={"id"},
+     *       @OA\Property(property="id", type="string", example="0"),
+     *    ),
+     * ),
+     * @OA\Response(
+     *    response=401,
+     *    description="Wrong credentials response",
+     *    @OA\JsonContent(
+     *       @OA\Property(property="result", type="string", example="error"),
+     *       @OA\Property(property="error", type="string", example="User does not exist")
+     *    )
+     * ),
+     * @OA\Response(
+     *    response=200,
+     *    description="Success",
+     *    @OA\JsonContent(
+     *       @OA\Property(property="result", type="string", example="success"),
+     *       @OA\Property(property="success", type="string", example="Reminder edited successfully")
+     *     )
+     *   )
+     * )
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function stateChanged(Request $request): JsonResponse {
+        $api_token = $this->getApiToken($request);
+
+        $user = $this->getUserByToken($api_token);
+
+        if (!$user) {
+            return $this->sendError(Messages::userError);
+        }
+
+        try {
+            $reminder = Reminder::where('id', $request['id'])->first();
+
+            if (!$reminder) {
+                return $this->sendError(Messages::reminderEditError);
+            }
+
+            $state = "On";
+            if ($reminder['state'] == "On") {
+                $state = "Off";
+            }
+
+            $reminder->state = $state;
+            $reminder->save();
+
+            return $this->sendSuccess(Messages::reminderRepeatSuccess);
+
+        } catch (Exception $exception) {
+            return $this->sendFailure($request, $exception, method: "/stateChanged");
+        }
     }
 }
