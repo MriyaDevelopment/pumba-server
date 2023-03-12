@@ -152,7 +152,7 @@ class ChildController extends \App\Http\Controllers\API\Controller
                 $child->save();
             }
 
-            if (!$this -> sendError($request['gender']) && $child['gender'] != $request['gender']) {
+            if (!$this -> stringIsEmptyOrNull($request['gender']) && $child['gender'] != $request['gender']) {
                 $child->gender = $request['gender'];
                 $child->save();
             }
